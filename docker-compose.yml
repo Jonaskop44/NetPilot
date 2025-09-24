@@ -1,0 +1,19 @@
+services:
+  netpilot-db:
+    image: postgres:latest
+    container_name: netpilot-db
+    restart: unless-stopped
+    env_file:
+      - ./server/.env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-netpilot}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-yourpassword}
+      POSTGRES_DB: ${POSTGRES_DB:-netpilot_db}
+    ports:
+      - "5432:5432"
+    volumes:
+      - netpilot-db-data:/var/lib/postgresql/data
+
+volumes:
+  netpilot-db-data:
+    driver: local
