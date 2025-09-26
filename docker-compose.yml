@@ -5,10 +5,6 @@ services:
     restart: unless-stopped
     env_file:
       - ./server/.env
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER:-netpilot}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-yourpassword}
-      POSTGRES_DB: ${POSTGRES_DB:-netpilot_db}
     ports:
       - "5432:5432"
     volumes:
