@@ -15,6 +15,9 @@ export class AuthController {
   @UseGuards(MicrosoftAuthGuard)
   async microsoftCallback(@Req() req: Request, @Res() res: Response) {
     const user = (req as any).user;
-    res.redirect('http://localhost:3001/dashboard');
+
+    console.log('Microsoft login successful, user:', user);
+
+    res.redirect(process.env.FRONTEND_REDIRECT_URL as string);
   }
 }
