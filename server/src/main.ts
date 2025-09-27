@@ -7,18 +7,21 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.setGlobalPrefix('api/v1');
+  app.enableCors({
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+  });
 
-  // Configure session middleware required for OIDC strategy
   app.use(
     expressSession({
-      secret:
-        process.env.SESSION_SECRET || 'your-secret-key-change-in-production',
+      secret: process.env.SESSION_SECRET as string,
       resave: false,
       saveUninitialized: false,
       cookie: {
-        secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+        secure: process.env.NODE_ENV === 'production',
         httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 24, // 24 hours
+        maxAge: 1000 * 60 * 60 * 24,
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       },
     }),
   );
