@@ -10,15 +10,26 @@ export class MicrosoftStrategy extends PassportStrategy(
 ) {
   constructor(private readonly authService: AuthService) {
     super({
-      clientID: '{YOUR_CLIENT_ID}',
-      clientSecret: '{YOUR_CLIENT_SECRET}',
-      callbackURL: 'https://www.example.net/auth/azureadoauth2/callback',
-      resource: '00000002-0000-0000-c000-000000000000',
-      tenant: 'contoso.onmicrosoft.com',
+      identityMetadata:
+        'https://login.microsoftonline.com/organizations/v2.0/.well-known/openid-configuration',
+      clientID: process.env.AZURE_CLIENT_ID,
+      clientSecret: process.env.AZURE_CLIENT_SECRET,
+      redirectUrl: process.env.AZURE_REDIRECT_URL,
+      allowHttpForRedirectUrl: true,
+      responseType: 'code',
+      responseMode: 'query',
+      scope: ['profile', 'openid', 'email'],
+      passReqToCallback: false,
+      validateIssuer: false,
+      isB2C: false,
+      issuer: null,
+      loggingLevel: 'info',
+      loggingNoPII: false,
     });
   }
 
   async validate(profile: any) {
+    console.log('Microsoft OAuth Profile:', profile);
     return this.authService.handleMicrosoftLogin(profile);
   }
 }
