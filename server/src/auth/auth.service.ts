@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Request } from 'express';
 import { UserService } from 'src/user/user.service';
 
 @Injectable()
@@ -18,9 +19,19 @@ export class AuthService {
         displayName,
         email,
       });
-      console.log('Created user:', user);
     }
 
     return user;
+  }
+
+  async getCurrentUser(request: Request) {
+    const session = request.session as any;
+    if (session.isAuthenticated && session.user) {
+      return {
+        isAuthenticated: true,
+        user: session.user,
+      };
+    }
+    return { isAuthenticated: false };
   }
 }

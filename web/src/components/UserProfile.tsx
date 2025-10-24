@@ -1,17 +1,9 @@
 "use client";
 
-interface User {
-  id: string;
-  name?: string;
-  username?: string;
-  email: string;
-  createdAt?: string;
-  updatedAt?: string;
-  providerId?: string;
-}
+import { UserDto } from "@/api/openapi.schemas";
 
 interface UserProfileProps {
-  user: User;
+  user: UserDto;
   onLogout: () => void;
   isLoading?: boolean;
 }
@@ -40,12 +32,12 @@ export default function UserProfile({
         <div className="flex items-center space-x-3">
           <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center">
             <span className="text-white font-bold text-lg">
-              {(user.name || user.username)?.charAt(0)?.toUpperCase() || "U"}
+              {user.username?.charAt(0)?.toUpperCase() || "U"}
             </span>
           </div>
           <div>
             <h3 className="font-semibold text-gray-900 dark:text-white">
-              {user.name || user.username || "Unbekannter Benutzer"}
+              {user.username || "Unbekannter Benutzer"}
             </h3>
             <p className="text-sm text-gray-600 dark:text-gray-400">
               {user.email}

@@ -1,0 +1,38 @@
+import { ApiProperty } from '@nestjs/swagger';
+
+export class UserResponseErrorDto {
+  @ApiProperty({ example: 'User not found', description: 'Error message' })
+  message: string;
+
+  @ApiProperty({ example: 'Unauthorized', description: 'Error message' })
+  error: string;
+
+  @ApiProperty({ example: 404, description: 'HTTP status code' })
+  statusCode: number;
+}
+
+export class UserDto {
+  @ApiProperty({ example: 1, description: 'User ID' })
+  id: number;
+
+  @ApiProperty({ example: 'user@example.com', description: 'User email' })
+  email: string;
+
+  @ApiProperty({ example: 'john_doe', description: 'Username' })
+  username: string;
+
+  @ApiProperty({ example: 'provider-12345', description: 'Provider ID' })
+  providerId: string;
+
+  @ApiProperty({
+    example: '2024-01-01T00:00:00.000Z',
+    description: 'Creation date',
+  })
+  createdAt: Date;
+
+  @ApiProperty({
+    example: '2024-01-02T00:00:00.000Z',
+    description: 'Last update date',
+  })
+  updatedAt: Date;
+}

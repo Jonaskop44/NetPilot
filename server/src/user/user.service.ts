@@ -1,4 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { Request } from 'express';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -26,5 +31,22 @@ export class UserService {
         email: email,
       },
     });
+  }
+
+  async getUserProfile(request: Request) {
+    const session = request.session as any;
+
+    if (!session.isAuthenticated || !session.user)
+      throw new UnauthorizedException('Not authenticated');
+
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: session.user.id,
+      },
+    });
+
+    if (!user) throw new NotFoundException('User not found');
+
+    return user;
   }
 }

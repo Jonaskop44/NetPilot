@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { default as expressSession } from 'express-session';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -33,6 +34,18 @@ async function bootstrap() {
       transform: true,
     }),
   );
+
+  // Swagger/OpenAPI Setup
+  const config = new DocumentBuilder()
+    .setTitle('NetPilot API')
+    .setDescription('NetPilot API Documentation')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api/v1/api-docs', app, document, {
+    jsonDocumentUrl: 'api/v1/api-docs-json',
+  });
 
   await app.listen(process.env.PORT ?? 4000);
 }

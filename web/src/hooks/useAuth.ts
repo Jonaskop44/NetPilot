@@ -1,53 +1,40 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import {
-  authService,
-  type User,
-  type AuthResponse,
-} from "@/services/authService";
+import { useAuthControllerGetCurrentUser } from "@/api/auth/auth";
+import { useAuthControllerLogout } from "@/api/auth/auth";
+
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api/v1";
 
 export function useAuth() {
-  const [user, setUser] = useState<User | null>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [isLoggingOut, setIsLoggingOut] = useState<boolean>(false);
+  // Get current user with react-query
+  const {
+    data: authData,
+    isLoading,
+    refetch: checkAuthStatus,
+  } = useAuthControllerGetCurrentUser();
 
-  useEffect(() => {
-    checkAuthStatus();
-  }, []);
+  // Logout mutation
+  const { mutate: logoutMutation, isPending: isLoggingOut } =
+    useAuthControllerLogout({
+      mutation: {
+        onSuccess: () => {
+          // Refetch auth status after logout
+          checkAuthStatus();
+        },
+      },
+    });
 
-  const checkAuthStatus = async () => {
-    try {
-      setIsLoading(true);
-      const authResponse: AuthResponse = await authService.checkAuthStatus();
-      setIsAuthenticated(authResponse.isAuthenticated);
-      setUser(authResponse.user || null);
-    } catch (error) {
-      console.error("Error checking authentication status:", error);
-      setIsAuthenticated(false);
-      setUser(null);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const user = authData?.user || null;
+  const isAuthenticated = authData?.isAuthenticated || false;
 
   const login = () => {
-    const loginUrl = authService.getLoginUrl();
+    const loginUrl = `${API_BASE_URL}/auth/microsoft`;
     window.location.href = loginUrl;
   };
 
-  const logout = async () => {
-    try {
-      setIsLoggingOut(true);
-      await authService.logout();
-      setUser(null);
-      setIsAuthenticated(false);
-    } catch (error) {
-      console.error("Error during logout:", error);
-    } finally {
-      setIsLoggingOut(false);
-    }
+  const logout = () => {
+    logoutMutation();
   };
 
   return {
