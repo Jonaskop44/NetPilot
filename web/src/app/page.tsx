@@ -1,65 +1,83 @@
 "use client";
 
-import Image from "next/image";
 import { useAuth } from "@/hooks/useAuth";
-import LoginButton from "@/components/LoginButton";
-import UserProfile from "@/components/UserProfile";
+import { Icon } from "@iconify/react";
 
-export default function Home() {
-  const { user, isAuthenticated, isLoading, isLoggingOut, login, logout } =
-    useAuth();
+const HomePage = () => {
+  const { isLoading, login } = useAuth();
 
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-
-        <div className="flex flex-col items-center gap-6">
-          <h1 className="text-2xl font-bold text-center">
-            Willkommen bei NetPilot
+    <div className="flex items-center justify-center h-screen">
+      <div className="text-center space-y-8 p-8 animate-fade-in">
+        {/* Logo/Brand */}
+        <div className="space-y-4">
+          <h1 className="text-6xl font-bold text-gray-900 animate-slide-up">
+            NetPilot
           </h1>
-
-          {isLoading ? (
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
-              <span className="text-gray-600">Lade...</span>
-            </div>
-          ) : isAuthenticated && user ? (
-            <UserProfile
-              user={user}
-              onLogout={logout}
-              isLoading={isLoggingOut}
-            />
-          ) : (
-            <div className="text-center">
-              <p className="mb-4 text-gray-600">
-                Bitte melde dich an, um auf dein Profil zuzugreifen.
-              </p>
-              <LoginButton onLogin={login} />
-            </div>
-          )}
+          <p className="text-xl text-gray-600 animate-slide-up animation-delay-100">
+            Deine intelligente Netzwerk-Management-Plattform
+          </p>
         </div>
 
-        {!isAuthenticated && !isLoading && (
-          <div className="flex gap-4 items-center flex-col sm:flex-row">
-            <a
-              className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-              href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Dokumentation
-            </a>
+        {/* Login Button */}
+        <div className="animate-slide-up animation-delay-200">
+          <button
+            onClick={login}
+            disabled={isLoading}
+            className="group relative px-8 py-4 bg-blue-600 text-white rounded-full font-semibold text-lg shadow-lg hover:shadow-xl hover:bg-blue-700 transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+          >
+            <span className="flex items-center gap-3">
+              {isLoading ? (
+                <>
+                  <Icon icon="svg-spinners:ring-resize" className="w-5 h-5" />
+                  Wird geladen...
+                </>
+              ) : (
+                <>
+                  <Icon
+                    icon="logos:microsoft-icon"
+                    className="w-6 h-6 transform group-hover:rotate-12 transition-transform"
+                  />
+                  Mit Microsoft anmelden
+                </>
+              )}
+            </span>
+            <div className="absolute inset-0 rounded-full bg-white opacity-0 group-hover:opacity-20 transition-opacity"></div>
+          </button>
+        </div>
+
+        {/* Features */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16 animate-fade-in animation-delay-300">
+          <div className="p-6 bg-white shadow-2xl rounded-xl border border-gray-200 hover:shadow-lg transition-shadow">
+            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4 mx-auto">
+              <Icon icon="lucide:zap" className="w-6 h-6 text-blue-600" />
+            </div>
+            <h3 className="font-semibold text-gray-800 mb-2">Schnell</h3>
+            <p className="text-sm text-gray-600">Blitzschnelle Performance</p>
           </div>
-        )}
-      </main>
+
+          <div className="p-6 bg-white shadow-2xl rounded-xl border border-gray-200 hover:shadow-lg transition-shadow">
+            <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4 mx-auto">
+              <Icon
+                icon="lucide:shield-check"
+                className="w-6 h-6 text-purple-600"
+              />
+            </div>
+            <h3 className="font-semibold text-gray-800 mb-2">Sicher</h3>
+            <p className="text-sm text-gray-600">Enterprise-Grade Security</p>
+          </div>
+
+          <div className="p-6 bg-white shadow-2xl rounded-xl border border-gray-200 hover:shadow-lg transition-shadow">
+            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4 mx-auto">
+              <Icon icon="lucide:sparkles" className="w-6 h-6 text-green-600" />
+            </div>
+            <h3 className="font-semibold text-gray-800 mb-2">Einfach</h3>
+            <p className="text-sm text-gray-600">Intuitives Interface</p>
+          </div>
+        </div>
+      </div>
     </div>
   );
-}
+};
+
+export default HomePage;
