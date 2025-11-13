@@ -4,6 +4,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Request } from 'express';
+import { Role } from 'generated/prisma';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -24,11 +25,16 @@ export class UserService {
     email: string;
   }) {
     const { oid, displayName, email } = profile;
+
+    const hasClass = /,\s*\d+[A-Z]+/.test(displayName);
+    const role = hasClass ? Role.STUDENT : Role.TEACHER;
+
     return this.prisma.user.create({
       data: {
         providerId: oid,
         username: displayName,
         email: email,
+        role: role,
       },
     });
   }
