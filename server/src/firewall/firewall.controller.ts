@@ -41,7 +41,7 @@ export class FirewallController {
     @Query('interface') interfaceName?: string,
     @Query('page') page?: number,
     @Query('limit') limit?: number,
-  ): Promise<FirewallRulesResponseDto> {
+  ) {
     return this.firewallService.getAllFirewallRules(
       interfaceName,
       page ? +page : 1,

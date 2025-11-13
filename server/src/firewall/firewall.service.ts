@@ -14,7 +14,7 @@ export class FirewallService {
     interfaceName?: string,
     page: number = 1,
     limit: number = 10,
-  ): Promise<FirewallRulesResponseDto> {
+  ) {
     const params: any = { show_all: 1 };
     if (interfaceName) {
       params.interface = interfaceName.toLowerCase();
