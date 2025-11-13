@@ -363,14 +363,6 @@ const FirewallRulesPage = () => {
     );
   }, [page, data?.totalPages]);
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-full">
-        <Spinner size="lg" />
-      </div>
-    );
-  }
-
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center h-full">
@@ -407,7 +399,12 @@ const FirewallRulesPage = () => {
               </TableColumn>
             )}
           </TableHeader>
-          <TableBody emptyContent={"Keine Regeln gefunden"} items={sortedItems}>
+          <TableBody
+            emptyContent={"Keine Regeln gefunden"}
+            items={sortedItems}
+            isLoading={isLoading}
+            loadingContent={<Spinner label="Lade Regeln..." />}
+          >
             {(item) => (
               <TableRow key={item.uuid}>
                 {(columnKey) => (
