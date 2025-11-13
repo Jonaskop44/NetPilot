@@ -38,7 +38,7 @@ const Navbar = () => {
             />
           </Link>
 
-          <div className="flex items-center justify-center w-10 h-10 rounded-lg z-99999 lg:px-16">
+          <div>
             <UserDropdown isMobile={isExpanded} />
           </div>
         </div>

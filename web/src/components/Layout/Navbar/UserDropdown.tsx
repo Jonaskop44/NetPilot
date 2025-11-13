@@ -15,7 +15,7 @@ interface UserDropdownProps {
 }
 
 const UserDropdown: FC<UserDropdownProps> = ({ isMobile }) => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
 
   return (
     <Dropdown placement="bottom-start">
@@ -37,6 +37,7 @@ const UserDropdown: FC<UserDropdownProps> = ({ isMobile }) => {
         </DropdownSection>
         <DropdownSection>
           <DropdownItem
+            onClick={logout}
             key="logout"
             color="danger"
             startContent={<Icon icon="solar:logout-3-line-duotone" />}
