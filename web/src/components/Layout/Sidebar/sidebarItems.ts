@@ -12,7 +12,7 @@ export const sidebarItems: NavSection[] = [
       {
         name: "User",
         icon: "solar:user-circle-linear",
-        path: "/user",
+        path: "/users",
       },
     ],
   },
@@ -22,17 +22,7 @@ export const sidebarItems: NavSection[] = [
       {
         name: "Regeln",
         icon: "solar:settings-linear",
-        path: "/settings",
-      },
-      {
-        name: "Arbeitstage",
-        icon: "solar:suitcase-line-duotone",
-        path: "/arbeitstage",
-      },
-      {
-        name: "Urlaubstage",
-        icon: "solar:calendar-linear",
-        path: "/urlaubstage",
+        path: "/firewall/rules",
       },
     ],
   },
