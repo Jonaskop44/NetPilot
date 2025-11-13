@@ -22,7 +22,7 @@ export const sidebarItems: NavSection[] = [
       {
         name: "Regeln",
         icon: "solar:settings-linear",
-        path: "/firewall/rules",
+        path: "/dashboard/firewall/rules",
       },
     ],
   },

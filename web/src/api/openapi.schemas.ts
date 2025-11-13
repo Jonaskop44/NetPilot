@@ -45,3 +45,78 @@ export interface UserResponseErrorDto {
   /** HTTP status code */
   statusCode: number;
 }
+
+/**
+ * Rule action (Pass/Block)
+ */
+export type FirewallRuleDtoAction =
+  (typeof FirewallRuleDtoAction)[keyof typeof FirewallRuleDtoAction];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const FirewallRuleDtoAction = {
+  Pass: "Pass",
+  Block: "Block",
+} as const;
+
+/**
+ * Rule direction (in/out)
+ */
+export type FirewallRuleDtoDirection =
+  (typeof FirewallRuleDtoDirection)[keyof typeof FirewallRuleDtoDirection];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const FirewallRuleDtoDirection = {
+  in: "in",
+  out: "out",
+} as const;
+
+export interface FirewallRuleDto {
+  /** Unique identifier for the rule */
+  uuid: string;
+  /** Whether the rule is enabled */
+  enabled: boolean;
+  /** Rule action (Pass/Block) */
+  action: FirewallRuleDtoAction;
+  /** Rule direction (in/out) */
+  direction: FirewallRuleDtoDirection;
+  /** IP protocol version */
+  ipprotocol: string;
+  /** Interface name */
+  interface?: string;
+  /** Protocol type */
+  protocol?: string;
+  /** Source network/address */
+  source_net?: string;
+  /** Source port */
+  source_port?: string;
+  /** Destination network/address */
+  destination_net?: string;
+  /** Destination port */
+  destination_port?: string;
+  /** Rule description */
+  description?: string;
+  /** Whether logging is enabled */
+  log?: boolean;
+  /** Category name */
+  category?: string;
+  /** Number of packets matched */
+  packets?: number;
+  /** Number of bytes matched */
+  bytes?: number;
+  /** Number of active states */
+  states?: number;
+}
+
+export interface FirewallRulesResponseDto {
+  /** Total number of rules */
+  total: number;
+  /** List of firewall rules */
+  rules: FirewallRuleDto[];
+}
+
+export type FirewallControllerGetAllFirewallRulesParams = {
+  /**
+   * Filter rules by interface name (e.g., lan, wan)
+   */
+  interface?: string;
+};
