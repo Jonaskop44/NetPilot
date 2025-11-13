@@ -376,12 +376,12 @@ const FirewallRulesPage = () => {
   }
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="px-6 pt-6 pb-4 shrink-0">
+    <div className="flex flex-col h-full p-6 overflow-hidden">
+      <div className="shrink-0 mb-4">
         <h1 className="text-3xl font-bold mb-2">Firewall Regeln</h1>
       </div>
 
-      <div className="flex-1 overflow-auto px-6 pb-6">
+      <div className="flex-1 min-h-0">
         <Table
           aria-label="Firewall Rules Table"
           isHeaderSticky
@@ -391,6 +391,10 @@ const FirewallRulesPage = () => {
           topContent={topContent}
           topContentPlacement="outside"
           onSortChange={setSortDescriptor}
+          classNames={{
+            base: "h-full overflow-hidden",
+            wrapper: "max-h-full overflow-auto scrollbar-hide",
+          }}
         >
           <TableHeader columns={columns}>
             {(column) => (

@@ -18,15 +18,13 @@ export const DashboardContent: FC<DashboardContentProps> = ({ children }) => {
       : "lg:ml-[90px]";
 
   return (
-    <div className="min-h-screen xl:flex">
+    <div className="h-screen flex overflow-hidden">
       <Sidebar />
       <div
-        className={`flex-1 transition-all duration-300 ease-in-out ${mainContentMargin}`}
+        className={`flex-1 flex flex-col transition-all duration-300 ease-in-out ${mainContentMargin} overflow-hidden`}
       >
         <Navbar />
-        <div className="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">
-          {children}
-        </div>
+        <div className="flex-1 overflow-hidden">{children}</div>
       </div>
     </div>
   );
