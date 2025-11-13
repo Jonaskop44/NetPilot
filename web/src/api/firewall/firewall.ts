@@ -28,7 +28,7 @@ import { customInstance } from ".././mutator";
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 /**
- * Retrieves all firewall rules from OPNsense with optional interface filtering
+ * Retrieves all firewall rules from OPNsense with optional interface filtering and pagination
  * @summary Get all firewall rules
  */
 export const firewallControllerGetAllFirewallRules = (

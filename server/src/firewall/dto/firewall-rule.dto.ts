@@ -130,4 +130,22 @@ export class FirewallRulesResponseDto {
     type: [FirewallRuleDto],
   })
   rules: FirewallRuleDto[];
+
+  @ApiProperty({
+    description: 'Current page number',
+    example: 1,
+  })
+  page: number;
+
+  @ApiProperty({
+    description: 'Number of items per page',
+    example: 10,
+  })
+  limit: number;
+
+  @ApiProperty({
+    description: 'Total number of pages',
+    example: 2,
+  })
+  totalPages: number;
 }

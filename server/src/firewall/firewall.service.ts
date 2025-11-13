@@ -10,18 +10,27 @@ export class FirewallService {
   private opnsenseClient = new OpnsenseClient();
   private client = this.opnsenseClient.getClient();
 
-  async getAllFirewallRules(interfaceName?: string) {
-    const interfaceParam = interfaceName
-      ? `&interface=${interfaceName.toLowerCase()}`
-      : '';
-    const response = await this.client.get(
-      `/firewall/filter/search_rule?show_all=1${interfaceParam}`,
-    );
+  async getAllFirewallRules(
+    interfaceName?: string,
+    page: number = 1,
+    limit: number = 10,
+  ): Promise<FirewallRulesResponseDto> {
+    const params: any = { show_all: 1 };
+    if (interfaceName) {
+      params.interface = interfaceName.toLowerCase();
+    }
+
+    const response = await this.client.get('/firewall/filter/search_rule', {
+      params,
+    });
     const data = response.data;
 
-    console.log('Firewall rules data:', data);
+    if (!data || !Array.isArray(data.rows)) {
+      console.error('Unexpected API response structure:', data);
+      throw new Error('Invalid response from OPNsense API');
+    }
 
-    const rules: FirewallRuleDto[] = data.rows.map((rule: any) => ({
+    const allRules: FirewallRuleDto[] = data.rows.map((rule: any) => ({
       uuid: rule.uuid,
       enabled: rule.enabled === '1',
       action: rule.action,
@@ -41,9 +50,17 @@ export class FirewallService {
       states: rule.states,
     }));
 
+    // Server-side pagination
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+    const paginatedRules = allRules.slice(startIndex, endIndex);
+
     return {
-      total: data.total,
-      rules,
+      total: allRules.length,
+      rules: paginatedRules,
+      page,
+      limit,
+      totalPages: Math.ceil(allRules.length / limit),
     };
   }
 }

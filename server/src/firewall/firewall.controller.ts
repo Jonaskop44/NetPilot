@@ -12,7 +12,7 @@ export class FirewallController {
   @ApiOperation({
     summary: 'Get all firewall rules',
     description:
-      'Retrieves all firewall rules from OPNsense with optional interface filtering',
+      'Retrieves all firewall rules from OPNsense with optional interface filtering and pagination',
   })
   @ApiResponse({
     status: 200,
@@ -25,7 +25,27 @@ export class FirewallController {
     description: 'Filter rules by interface name (e.g., lan, wan)',
     example: 'lan',
   })
-  async getAllFirewallRules(@Query('interface') interfaceName?: string) {
-    return this.firewallService.getAllFirewallRules(interfaceName);
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    description: 'Page number for pagination',
+    example: 1,
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    description: 'Number of items per page',
+    example: 10,
+  })
+  async getAllFirewallRules(
+    @Query('interface') interfaceName?: string,
+    @Query('page') page?: number,
+    @Query('limit') limit?: number,
+  ): Promise<FirewallRulesResponseDto> {
+    return this.firewallService.getAllFirewallRules(
+      interfaceName,
+      page ? +page : 1,
+      limit ? +limit : 10,
+    );
   }
 }

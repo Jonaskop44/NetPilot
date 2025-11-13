@@ -112,6 +112,12 @@ export interface FirewallRulesResponseDto {
   total: number;
   /** List of firewall rules */
   rules: FirewallRuleDto[];
+  /** Current page number */
+  page: number;
+  /** Number of items per page */
+  limit: number;
+  /** Total number of pages */
+  totalPages: number;
 }
 
 export type FirewallControllerGetAllFirewallRulesParams = {
@@ -119,4 +125,12 @@ export type FirewallControllerGetAllFirewallRulesParams = {
    * Filter rules by interface name (e.g., lan, wan)
    */
   interface?: string;
+  /**
+   * Page number for pagination
+   */
+  page?: number;
+  /**
+   * Number of items per page
+   */
+  limit?: number;
 };
