@@ -3,20 +3,20 @@ import { ApiProperty } from '@nestjs/swagger';
 export class FirewallRuleDto {
   @ApiProperty({
     description: 'Unique identifier for the rule',
-    example: 'ab7ba289-402d-4fe3-9f3f-2513d2ed84e8',
+    example: 'e855ff5f-47b7-4251-91e0-234b35da7853',
   })
   uuid: string;
 
   @ApiProperty({
     description: 'Whether the rule is enabled',
-    example: true,
+    example: '1',
   })
-  enabled: boolean;
+  enabled: string;
 
   @ApiProperty({
-    description: 'Rule action (Pass/Block)',
-    example: 'Pass',
-    enum: ['Pass', 'Block'],
+    description: 'Rule action (pass/block/reject)',
+    example: 'pass',
+    enum: ['pass', 'block', 'reject'],
   })
   action: string;
 
@@ -28,14 +28,16 @@ export class FirewallRuleDto {
   direction: string;
 
   @ApiProperty({
-    description: 'IP protocol version',
-    example: 'IPv4',
+    description:
+      'IP protocol version (inet=IPv4, inet6=IPv6, inet46=IPv4+IPv6)',
+    example: 'inet',
+    enum: ['inet', 'inet6', 'inet46'],
   })
   ipprotocol: string;
 
   @ApiProperty({
     description: 'Interface name',
-    example: 'LAN',
+    example: 'lan',
     required: false,
   })
   interface?: string;
@@ -49,7 +51,7 @@ export class FirewallRuleDto {
 
   @ApiProperty({
     description: 'Source network/address',
-    example: '192.168.1.0/24',
+    example: 'any',
     required: false,
   })
   source_net?: string;
@@ -84,38 +86,51 @@ export class FirewallRuleDto {
 
   @ApiProperty({
     description: 'Whether logging is enabled',
+    example: '1',
+  })
+  log: string;
+
+  @ApiProperty({
+    description: 'State type (keep state, sloppy state, etc.)',
+    example: 'keep',
+    required: false,
+  })
+  statetype?: string;
+
+  @ApiProperty({
+    description: 'State policy (default, if-bound, floating)',
+    example: 'default',
+    required: false,
+  })
+  state_policy?: string;
+
+  @ApiProperty({
+    description: 'Quick rule (process immediately)',
     example: true,
     required: false,
   })
-  log?: boolean;
+  quick?: boolean;
 
   @ApiProperty({
-    description: 'Category name',
-    example: 'Web Traffic',
+    description: 'Gateway for this rule',
+    example: 'None',
     required: false,
   })
-  category?: string;
+  gateway?: string;
 
   @ApiProperty({
-    description: 'Number of packets matched',
-    example: 1234,
+    description: 'Sequence number',
+    example: '100',
     required: false,
   })
-  packets?: number;
+  sequence?: string;
 
   @ApiProperty({
-    description: 'Number of bytes matched',
-    example: 567890,
+    description: 'Categories assigned to this rule',
+    example: [],
     required: false,
   })
-  bytes?: number;
-
-  @ApiProperty({
-    description: 'Number of active states',
-    example: 5,
-    required: false,
-  })
-  states?: number;
+  categories?: string[];
 }
 
 export class FirewallRulesResponseDto {
@@ -130,22 +145,18 @@ export class FirewallRulesResponseDto {
     type: [FirewallRuleDto],
   })
   rules: FirewallRuleDto[];
+}
+
+export class ToggleFirewallRuleDto {
+  @ApiProperty({
+    description: 'Result of the toggle operation',
+    example: 'Enabled',
+  })
+  result: string;
 
   @ApiProperty({
-    description: 'Current page number',
-    example: 1,
+    description: 'Indicates if the rule state was changed',
+    example: true,
   })
-  page: number;
-
-  @ApiProperty({
-    description: 'Number of items per page',
-    example: 10,
-  })
-  limit: number;
-
-  @ApiProperty({
-    description: 'Total number of pages',
-    example: 2,
-  })
-  totalPages: number;
+  changed: boolean;
 }

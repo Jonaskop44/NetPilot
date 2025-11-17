@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Post, Query } from '@nestjs/common';
 import { FirewallService } from './firewall.service';
 import { ApiOperation, ApiTags, ApiResponse, ApiQuery } from '@nestjs/swagger';
 import { FirewallRulesResponseDto } from './dto/firewall-rule.dto';
@@ -19,33 +19,25 @@ export class FirewallController {
     description: 'Successfully retrieved firewall rules',
     type: FirewallRulesResponseDto,
   })
-  @ApiQuery({
-    name: 'interface',
-    required: false,
-    description: 'Filter rules by interface name (e.g., lan, wan)',
-    example: 'lan',
+  async getAllFirewallRules() {
+    return this.firewallService.getAllFirewallRules();
+  }
+
+  @Post('toggle-rule')
+  @ApiOperation({
+    summary: 'Toggle a firewall rule',
+    description: 'Enables or disables a firewall rule by its UUID',
   })
   @ApiQuery({
-    name: 'page',
-    required: false,
-    description: 'Page number for pagination',
-    example: 1,
+    name: 'uuid',
+    description: 'Unique identifier of the firewall rule to toggle',
+    required: true,
   })
-  @ApiQuery({
-    name: 'limit',
-    required: false,
-    description: 'Number of items per page',
-    example: 10,
+  @ApiResponse({
+    status: 200,
+    description: 'Successfully toggled the firewall rule',
   })
-  async getAllFirewallRules(
-    @Query('interface') interfaceName?: string,
-    @Query('page') page?: number,
-    @Query('limit') limit?: number,
-  ) {
-    return this.firewallService.getAllFirewallRules(
-      interfaceName,
-      page ? +page : 1,
-      limit ? +limit : 10,
-    );
+  async toggleFirewallRule(@Query('uuid') uuid: string) {
+    return this.firewallService.toggleFirewallRule(uuid);
   }
 }

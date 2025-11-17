@@ -1,66 +1,66 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { OpnsenseClient } from './opnsense.client';
-import {
-  FirewallRulesResponseDto,
-  FirewallRuleDto,
-} from './dto/firewall-rule.dto';
+import { FirewallRuleDto } from './dto/firewall-rule.dto';
 
 @Injectable()
 export class FirewallService {
   private opnsenseClient = new OpnsenseClient();
   private client = this.opnsenseClient.getClient();
 
-  async getAllFirewallRules(
-    interfaceName?: string,
-    page: number = 1,
-    limit: number = 10,
-  ) {
-    const params: any = { show_all: 1 };
-    if (interfaceName) {
-      params.interface = interfaceName.toLowerCase();
-    }
-
-    const response = await this.client.get('/firewall/filter/search_rule', {
-      params,
-    });
+  async getAllFirewallRules() {
+    const response = await this.client.get('/firewall/filter/get');
     const data = response.data;
 
-    if (!data || !Array.isArray(data.rows)) {
+    if (!data?.filter?.rules?.rule) {
       console.error('Unexpected API response structure:', data);
-      throw new Error('Invalid response from OPNsense API');
+      throw new NotFoundException('Invalid response from OPNsense API');
     }
 
-    const allRules: FirewallRuleDto[] = data.rows.map((rule: any) => ({
-      uuid: rule.uuid,
-      enabled: rule.enabled === '1',
-      action: rule.action,
-      direction: rule.direction,
-      ipprotocol: rule.ipprotocol,
-      interface: rule.interface,
-      protocol: rule.protocol,
-      source_net: rule.source_net || undefined,
-      source_port: rule.source_port || undefined,
-      destination_net: rule.destination_net || undefined,
-      destination_port: rule.destination_port?.toString() || undefined,
-      description: rule.description || undefined,
-      log: rule.log,
-      category: rule.category,
-      packets: rule.packets,
-      bytes: rule.bytes,
-      states: rule.states,
-    }));
+    const rulesObject = data.filter.rules.rule;
 
-    // Server-side pagination
-    const startIndex = (page - 1) * limit;
-    const endIndex = startIndex + limit;
-    const paginatedRules = allRules.slice(startIndex, endIndex);
+    const allRules = Object.entries(rulesObject).map(
+      ([uuid, ruleData]: [string, FirewallRuleDto]) => {
+        const extractSelectedOption = (field: any) => {
+          if (!field || typeof field !== 'object') return null;
+
+          const selectedEntry = Object.entries(field).find(
+            ([_, value]: [string, any]) => value.selected === '1',
+          );
+
+          return selectedEntry ? selectedEntry[0] : null;
+        };
+
+        return {
+          uuid,
+          enabled: ruleData.enabled === '1',
+          action: extractSelectedOption(ruleData.action),
+          direction: extractSelectedOption(ruleData.direction),
+          ipprotocol: extractSelectedOption(ruleData.ipprotocol),
+          protocol: extractSelectedOption(ruleData.protocol),
+          source_net: ruleData.source_net ?? null,
+          destination_net: ruleData.destination_net ?? null,
+          description: ruleData.description ?? null,
+          log: ruleData.log === '1',
+        };
+      },
+    );
 
     return {
       total: allRules.length,
-      rules: paginatedRules,
-      page,
-      limit,
-      totalPages: Math.ceil(allRules.length / limit),
+      rules: allRules,
     };
+  }
+
+  async toggleFirewallRule(uuid: string) {
+    const response = await this.client.post(
+      `/firewall/filter/toggleRule//${uuid}`,
+    );
+    const data = response.data;
+
+    if (!data) {
+      throw new NotFoundException('No data returned from OPNsense API');
+    }
+
+    return data;
   }
 }
