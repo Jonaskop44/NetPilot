@@ -29,16 +29,18 @@ const columns = [
   { name: "AKTION", uid: "action", sortable: true },
   { name: "RICHTUNG", uid: "direction", sortable: true },
   { name: "INTERFACE", uid: "interface" },
+  { name: "IP-PROTOKOLL", uid: "ipprotocol" },
   { name: "PROTOKOLL", uid: "protocol" },
   { name: "QUELLE", uid: "source" },
   { name: "ZIEL", uid: "destination" },
+  { name: "LOG", uid: "log" },
   { name: "BESCHREIBUNG", uid: "description" },
 ];
 
 const actionColorMap: Record<string, ChipProps["color"]> = {
   pass: "success",
   block: "danger",
-  reject: "warning",
+  reject: "danger",
 };
 
 const FirewallRulesPage = () => {
@@ -174,8 +176,29 @@ const FirewallRulesPage = () => {
               {rule.interface || "-"}
             </Chip>
           );
+        case "ipprotocol":
+          const ipProtocolLabel: Record<string, string> = {
+            inet: "IPv4",
+            inet6: "IPv6",
+            inet46: "IPv4+IPv6",
+          };
+          return (
+            <Chip variant="flat" size="sm" color="primary">
+              {ipProtocolLabel[rule.ipprotocol] || rule.ipprotocol || "-"}
+            </Chip>
+          );
         case "protocol":
-          return rule.protocol || rule.ipprotocol || "-";
+          return rule.protocol || "-";
+        case "log":
+          return (
+            <Chip
+              color={rule.log ? "success" : "default"}
+              variant="dot"
+              size="sm"
+            >
+              {rule.log ? "Aktiv" : "Inaktiv"}
+            </Chip>
+          );
         case "source":
           return (
             <div className="text-sm">
