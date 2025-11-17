@@ -17,7 +17,6 @@ import {
   DropdownTrigger,
   DropdownMenu,
   DropdownItem,
-  Pagination,
   Selection,
   SortDescriptor,
   ChipProps,
@@ -34,36 +33,24 @@ const columns = [
   { name: "QUELLE", uid: "source" },
   { name: "ZIEL", uid: "destination" },
   { name: "BESCHREIBUNG", uid: "description" },
-  { name: "STATISTIKEN", uid: "stats" },
 ];
 
-const statusColorMap: Record<string, ChipProps["color"]> = {
-  true: "success",
-  false: "default",
-};
-
 const actionColorMap: Record<string, ChipProps["color"]> = {
-  Pass: "success",
-  Block: "danger",
+  pass: "success",
+  block: "danger",
+  reject: "danger",
 };
 
 const FirewallRulesPage = () => {
   const [filterValue, setFilterValue] = useState("");
-  const [selectedInterface, setSelectedInterface] = useState<string>("");
   const [actionFilter, setActionFilter] = useState<Selection>("all");
   const [directionFilter, setDirectionFilter] = useState<Selection>("all");
-  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
     column: "action",
     direction: "ascending",
   });
-  const [page, setPage] = useState(1);
 
-  const { data, isLoading, error } = useFirewallControllerGetAllFirewallRules({
-    interface: selectedInterface || undefined,
-    page,
-    limit: rowsPerPage,
-  });
+  const { data, isLoading, error } = useFirewallControllerGetAllFirewallRules();
 
   const hasSearchFilter = Boolean(filterValue);
   const filteredItems = useMemo(() => {
@@ -124,7 +111,7 @@ const FirewallRulesPage = () => {
         case "enabled":
           return (
             <Chip
-              color={statusColorMap[String(rule.enabled)]}
+              color={rule.enabled ? "success" : "default"}
               variant="flat"
               size="sm"
             >
@@ -140,7 +127,7 @@ const FirewallRulesPage = () => {
               startContent={
                 <Icon
                   icon={
-                    rule.action === "Pass"
+                    rule.action === "pass"
                       ? "solar:check-circle-linear"
                       : "solar:close-circle-linear"
                   }
@@ -199,14 +186,6 @@ const FirewallRulesPage = () => {
               {rule.description || "-"}
             </div>
           );
-        case "stats":
-          return (
-            <div className="text-xs text-gray-500">
-              <div>Pakete: {rule.packets || 0}</div>
-              <div>Bytes: {rule.bytes || 0}</div>
-              <div>States: {rule.states || 0}</div>
-            </div>
-          );
         default:
           return cellValue;
       }
@@ -217,7 +196,6 @@ const FirewallRulesPage = () => {
   const onSearchChange = useCallback((value?: string) => {
     if (value) {
       setFilterValue(value);
-      setPage(1);
     } else {
       setFilterValue("");
     }
@@ -225,7 +203,6 @@ const FirewallRulesPage = () => {
 
   const onClear = useCallback(() => {
     setFilterValue("");
-    setPage(1);
   }, []);
 
   const topContent = useMemo(() => {
@@ -248,32 +225,6 @@ const FirewallRulesPage = () => {
                   endContent={<Icon icon="solar:alt-arrow-down-linear" />}
                   variant="flat"
                 >
-                  Interface
-                </Button>
-              </DropdownTrigger>
-              <DropdownMenu
-                disallowEmptySelection={false}
-                aria-label="Interface Filter"
-                selectedKeys={selectedInterface ? [selectedInterface] : []}
-                selectionMode="single"
-                onSelectionChange={(keys) => {
-                  const selected = Array.from(keys)[0] as string;
-                  setSelectedInterface(selected || "");
-                  setPage(1);
-                }}
-              >
-                <DropdownItem key="">Alle</DropdownItem>
-                <DropdownItem key="lan">LAN</DropdownItem>
-                <DropdownItem key="wan">WAN</DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
-
-            <Dropdown>
-              <DropdownTrigger>
-                <Button
-                  endContent={<Icon icon="solar:alt-arrow-down-linear" />}
-                  variant="flat"
-                >
                   Aktion
                 </Button>
               </DropdownTrigger>
@@ -285,8 +236,9 @@ const FirewallRulesPage = () => {
                 selectionMode="multiple"
                 onSelectionChange={setActionFilter}
               >
-                <DropdownItem key="Pass">Pass</DropdownItem>
-                <DropdownItem key="Block">Block</DropdownItem>
+                <DropdownItem key="pass">Pass</DropdownItem>
+                <DropdownItem key="block">Block</DropdownItem>
+                <DropdownItem key="reject">Reject</DropdownItem>
               </DropdownMenu>
             </Dropdown>
 
@@ -313,55 +265,9 @@ const FirewallRulesPage = () => {
             </Dropdown>
           </div>
         </div>
-        <div className="flex justify-between items-center">
-          <span className="text-default-400 text-small">
-            Gesamt {data?.total || 0} Regeln
-          </span>
-          <label className="flex items-center text-default-400 text-small">
-            Zeilen pro Seite:
-            <select
-              className="bg-transparent outline-none text-default-400 text-small ml-2"
-              value={rowsPerPage}
-              onChange={(e) => {
-                setRowsPerPage(Number(e.target.value));
-                setPage(1);
-              }}
-            >
-              <option value="5">5</option>
-              <option value="10">10</option>
-              <option value="15">15</option>
-              <option value="20">20</option>
-            </select>
-          </label>
-        </div>
       </div>
     );
-  }, [
-    filterValue,
-    selectedInterface,
-    actionFilter,
-    directionFilter,
-    data?.total,
-    rowsPerPage,
-    onSearchChange,
-    onClear,
-  ]);
-
-  const bottomContent = useMemo(() => {
-    return (
-      <div className="py-2 px-2 flex justify-center items-center">
-        <Pagination
-          isCompact
-          showControls
-          showShadow
-          color="primary"
-          page={page}
-          total={data?.totalPages || 1}
-          onChange={setPage}
-        />
-      </div>
-    );
-  }, [page, data?.totalPages]);
+  }, [filterValue, actionFilter, directionFilter, onSearchChange, onClear]);
 
   if (error) {
     return (
@@ -385,8 +291,6 @@ const FirewallRulesPage = () => {
         <Table
           aria-label="Firewall Rules Table"
           isHeaderSticky
-          bottomContent={bottomContent}
-          bottomContentPlacement="outside"
           sortDescriptor={sortDescriptor}
           topContent={topContent}
           topContentPlacement="outside"

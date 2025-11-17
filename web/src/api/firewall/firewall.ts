@@ -5,21 +5,24 @@
  * NetPilot API Documentation
  * OpenAPI spec version: 1.0
  */
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import type {
   DataTag,
   DefinedInitialDataOptions,
   DefinedUseQueryResult,
+  MutationFunction,
   QueryClient,
   QueryFunction,
   QueryKey,
   UndefinedInitialDataOptions,
+  UseMutationOptions,
+  UseMutationResult,
   UseQueryOptions,
   UseQueryResult,
 } from "@tanstack/react-query";
 
 import type {
-  FirewallControllerGetAllFirewallRulesParams,
+  FirewallControllerToggleFirewallRuleParams,
   FirewallRulesResponseDto,
 } from "../openapi.schemas";
 
@@ -32,7 +35,6 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
  * @summary Get all firewall rules
  */
 export const firewallControllerGetAllFirewallRules = (
-  params?: FirewallControllerGetAllFirewallRulesParams,
   options?: SecondParameter<typeof customInstance>,
   signal?: AbortSignal,
 ) => {
@@ -40,48 +42,39 @@ export const firewallControllerGetAllFirewallRules = (
     {
       url: `http://localhost:4000/api/v1/firewall/rules`,
       method: "GET",
-      params,
       signal,
     },
     options,
   );
 };
 
-export const getFirewallControllerGetAllFirewallRulesQueryKey = (
-  params?: FirewallControllerGetAllFirewallRulesParams,
-) => {
-  return [
-    `http://localhost:4000/api/v1/firewall/rules`,
-    ...(params ? [params] : []),
-  ] as const;
+export const getFirewallControllerGetAllFirewallRulesQueryKey = () => {
+  return [`http://localhost:4000/api/v1/firewall/rules`] as const;
 };
 
 export const getFirewallControllerGetAllFirewallRulesQueryOptions = <
   TData = Awaited<ReturnType<typeof firewallControllerGetAllFirewallRules>>,
   TError = unknown,
->(
-  params?: FirewallControllerGetAllFirewallRulesParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof firewallControllerGetAllFirewallRules>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof customInstance>;
-  },
-) => {
+>(options?: {
+  query?: Partial<
+    UseQueryOptions<
+      Awaited<ReturnType<typeof firewallControllerGetAllFirewallRules>>,
+      TError,
+      TData
+    >
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}) => {
   const { query: queryOptions, request: requestOptions } = options ?? {};
 
   const queryKey =
     queryOptions?.queryKey ??
-    getFirewallControllerGetAllFirewallRulesQueryKey(params);
+    getFirewallControllerGetAllFirewallRulesQueryKey();
 
   const queryFn: QueryFunction<
     Awaited<ReturnType<typeof firewallControllerGetAllFirewallRules>>
   > = ({ signal }) =>
-    firewallControllerGetAllFirewallRules(params, requestOptions, signal);
+    firewallControllerGetAllFirewallRules(requestOptions, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof firewallControllerGetAllFirewallRules>>,
@@ -99,7 +92,6 @@ export function useFirewallControllerGetAllFirewallRules<
   TData = Awaited<ReturnType<typeof firewallControllerGetAllFirewallRules>>,
   TError = unknown,
 >(
-  params: undefined | FirewallControllerGetAllFirewallRulesParams,
   options: {
     query: Partial<
       UseQueryOptions<
@@ -126,7 +118,6 @@ export function useFirewallControllerGetAllFirewallRules<
   TData = Awaited<ReturnType<typeof firewallControllerGetAllFirewallRules>>,
   TError = unknown,
 >(
-  params?: FirewallControllerGetAllFirewallRulesParams,
   options?: {
     query?: Partial<
       UseQueryOptions<
@@ -153,7 +144,6 @@ export function useFirewallControllerGetAllFirewallRules<
   TData = Awaited<ReturnType<typeof firewallControllerGetAllFirewallRules>>,
   TError = unknown,
 >(
-  params?: FirewallControllerGetAllFirewallRulesParams,
   options?: {
     query?: Partial<
       UseQueryOptions<
@@ -176,7 +166,6 @@ export function useFirewallControllerGetAllFirewallRules<
   TData = Awaited<ReturnType<typeof firewallControllerGetAllFirewallRules>>,
   TError = unknown,
 >(
-  params?: FirewallControllerGetAllFirewallRulesParams,
   options?: {
     query?: Partial<
       UseQueryOptions<
@@ -191,10 +180,8 @@ export function useFirewallControllerGetAllFirewallRules<
 ): UseQueryResult<TData, TError> & {
   queryKey: DataTag<QueryKey, TData, TError>;
 } {
-  const queryOptions = getFirewallControllerGetAllFirewallRulesQueryOptions(
-    params,
-    options,
-  );
+  const queryOptions =
+    getFirewallControllerGetAllFirewallRulesQueryOptions(options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,
@@ -205,3 +192,96 @@ export function useFirewallControllerGetAllFirewallRules<
 
   return query;
 }
+
+/**
+ * Enables or disables a firewall rule by its UUID
+ * @summary Toggle a firewall rule
+ */
+export const firewallControllerToggleFirewallRule = (
+  params: FirewallControllerToggleFirewallRuleParams,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal,
+) => {
+  return customInstance<void>(
+    {
+      url: `http://localhost:4000/api/v1/firewall/toggle-rule`,
+      method: "POST",
+      params,
+      signal,
+    },
+    options,
+  );
+};
+
+export const getFirewallControllerToggleFirewallRuleMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof firewallControllerToggleFirewallRule>>,
+    TError,
+    { params: FirewallControllerToggleFirewallRuleParams },
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof firewallControllerToggleFirewallRule>>,
+  TError,
+  { params: FirewallControllerToggleFirewallRuleParams },
+  TContext
+> => {
+  const mutationKey = ["firewallControllerToggleFirewallRule"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof firewallControllerToggleFirewallRule>>,
+    { params: FirewallControllerToggleFirewallRuleParams }
+  > = (props) => {
+    const { params } = props ?? {};
+
+    return firewallControllerToggleFirewallRule(params, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type FirewallControllerToggleFirewallRuleMutationResult = NonNullable<
+  Awaited<ReturnType<typeof firewallControllerToggleFirewallRule>>
+>;
+
+export type FirewallControllerToggleFirewallRuleMutationError = unknown;
+
+/**
+ * @summary Toggle a firewall rule
+ */
+export const useFirewallControllerToggleFirewallRule = <
+  TError = unknown,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof firewallControllerToggleFirewallRule>>,
+      TError,
+      { params: FirewallControllerToggleFirewallRuleParams },
+      TContext
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof firewallControllerToggleFirewallRule>>,
+  TError,
+  { params: FirewallControllerToggleFirewallRuleParams },
+  TContext
+> => {
+  const mutationOptions =
+    getFirewallControllerToggleFirewallRuleMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};

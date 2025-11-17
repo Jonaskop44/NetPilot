@@ -47,15 +47,16 @@ export interface UserResponseErrorDto {
 }
 
 /**
- * Rule action (Pass/Block)
+ * Rule action (pass/block/reject)
  */
 export type FirewallRuleDtoAction =
   (typeof FirewallRuleDtoAction)[keyof typeof FirewallRuleDtoAction];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const FirewallRuleDtoAction = {
-  Pass: "Pass",
-  Block: "Block",
+  pass: "pass",
+  block: "block",
+  reject: "reject",
 } as const;
 
 /**
@@ -70,17 +71,30 @@ export const FirewallRuleDtoDirection = {
   out: "out",
 } as const;
 
+/**
+ * IP protocol version (inet=IPv4, inet6=IPv6, inet46=IPv4+IPv6)
+ */
+export type FirewallRuleDtoIpprotocol =
+  (typeof FirewallRuleDtoIpprotocol)[keyof typeof FirewallRuleDtoIpprotocol];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const FirewallRuleDtoIpprotocol = {
+  inet: "inet",
+  inet6: "inet6",
+  inet46: "inet46",
+} as const;
+
 export interface FirewallRuleDto {
   /** Unique identifier for the rule */
   uuid: string;
   /** Whether the rule is enabled */
-  enabled: boolean;
-  /** Rule action (Pass/Block) */
+  enabled: string;
+  /** Rule action (pass/block/reject) */
   action: FirewallRuleDtoAction;
   /** Rule direction (in/out) */
   direction: FirewallRuleDtoDirection;
-  /** IP protocol version */
-  ipprotocol: string;
+  /** IP protocol version (inet=IPv4, inet6=IPv6, inet46=IPv4+IPv6) */
+  ipprotocol: FirewallRuleDtoIpprotocol;
   /** Interface name */
   interface?: string;
   /** Protocol type */
@@ -96,15 +110,19 @@ export interface FirewallRuleDto {
   /** Rule description */
   description?: string;
   /** Whether logging is enabled */
-  log?: boolean;
-  /** Category name */
-  category?: string;
-  /** Number of packets matched */
-  packets?: number;
-  /** Number of bytes matched */
-  bytes?: number;
-  /** Number of active states */
-  states?: number;
+  log: string;
+  /** State type (keep state, sloppy state, etc.) */
+  statetype?: string;
+  /** State policy (default, if-bound, floating) */
+  state_policy?: string;
+  /** Quick rule (process immediately) */
+  quick?: boolean;
+  /** Gateway for this rule */
+  gateway?: string;
+  /** Sequence number */
+  sequence?: string;
+  /** Categories assigned to this rule */
+  categories?: string[];
 }
 
 export interface FirewallRulesResponseDto {
@@ -112,25 +130,11 @@ export interface FirewallRulesResponseDto {
   total: number;
   /** List of firewall rules */
   rules: FirewallRuleDto[];
-  /** Current page number */
-  page: number;
-  /** Number of items per page */
-  limit: number;
-  /** Total number of pages */
-  totalPages: number;
 }
 
-export type FirewallControllerGetAllFirewallRulesParams = {
+export type FirewallControllerToggleFirewallRuleParams = {
   /**
-   * Filter rules by interface name (e.g., lan, wan)
+   * Unique identifier of the firewall rule to toggle
    */
-  interface?: string;
-  /**
-   * Page number for pagination
-   */
-  page?: number;
-  /**
-   * Number of items per page
-   */
-  limit?: number;
+  uuid: string;
 };
