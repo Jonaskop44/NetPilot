@@ -3,11 +3,9 @@
 import { useAuthControllerGetCurrentUser } from "@/api/auth/auth";
 import { useAuthControllerLogout } from "@/api/auth/auth";
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api/v1";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
-export function useAuth() {
-  // Get current user with react-query
+const useAuth = () => {
   const {
     data: authData,
     isLoading,
@@ -19,8 +17,7 @@ export function useAuth() {
     useAuthControllerLogout({
       mutation: {
         onSuccess: () => {
-          // Refetch auth status after logout
-          checkAuthStatus();
+          window.location.href = "/";
         },
       },
     });
@@ -46,4 +43,6 @@ export function useAuth() {
     logout,
     checkAuthStatus,
   };
-}
+};
+
+export default useAuth;
