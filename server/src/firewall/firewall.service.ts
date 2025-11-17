@@ -12,7 +12,6 @@ export class FirewallService {
     const data = response.data;
 
     if (!data?.filter?.rules?.rule) {
-      console.error('Unexpected API response structure:', data);
       throw new NotFoundException('Invalid response from OPNsense API');
     }
 
