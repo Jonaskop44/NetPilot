@@ -146,9 +146,26 @@ export interface FirewallRulesResponseDto {
   rules: FirewallRuleDto[];
 }
 
+export interface PaginatedUsersResponseDto {
+  users: UserDto[];
+  /** Total number of users */
+  total: number;
+  /** Current page number */
+  page: number;
+  /** Total number of pages */
+  totalPages: number;
+}
+
 export type FirewallControllerToggleFirewallRuleParams = {
   /**
    * Unique identifier of the firewall rule to toggle
    */
   uuid: string;
+};
+
+export type AdminControllerGetAllUsersParams = {
+  /**
+   * Page number
+   */
+  page: number;
 };

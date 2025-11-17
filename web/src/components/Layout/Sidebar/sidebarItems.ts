@@ -11,9 +11,9 @@ export const sidebarItems: NavSection[] = [
         path: "/dashboard",
       },
       {
-        name: "User",
+        name: "Users",
         icon: "solar:user-circle-linear",
-        path: "/users",
+        path: "/dashboard/admin/users",
         allowedRoles: [UserDtoRole.ADMINISTRATOR],
       },
     ],
