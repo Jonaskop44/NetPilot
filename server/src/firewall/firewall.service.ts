@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { OpnsenseClient } from './opnsense.client';
-import { FirewallRuleDto } from './dto/firewall-rule.dto';
 
 @Injectable()
 export class FirewallService {

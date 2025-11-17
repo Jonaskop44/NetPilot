@@ -1,8 +1,13 @@
-import { Controller, Get, Post, Query } from '@nestjs/common';
+import { Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { FirewallService } from './firewall.service';
 import { ApiOperation, ApiTags, ApiResponse, ApiQuery } from '@nestjs/swagger';
 import { FirewallRulesResponseDto } from './dto/firewall-rule.dto';
+import { Roles } from 'src/auth/decorators/roles.decorators';
+import { Role } from 'generated/prisma';
+import { RolesGuard } from 'src/guard/roles.guard';
 
+@Roles(Role.TEACHER, Role.ADMINISTRATOR)
+@UseGuards(RolesGuard)
 @ApiTags('firewall')
 @Controller('firewall')
 export class FirewallController {
