@@ -29,7 +29,6 @@ export class MicrosoftStrategy extends PassportStrategy(
   }
 
   async validate(profile: any) {
-    console.log('Microsoft OAuth Profile:', profile);
     return this.authService.handleMicrosoftLogin(profile);
   }
 }

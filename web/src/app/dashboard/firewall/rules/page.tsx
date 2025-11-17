@@ -1,6 +1,9 @@
 "use client";
 
-import { useFirewallControllerGetAllFirewallRules } from "@/api/firewall/firewall";
+import {
+  useFirewallControllerGetAllFirewallRules,
+  useFirewallControllerToggleFirewallRule,
+} from "@/api/firewall/firewall";
 import type { FirewallRuleDto } from "@/api/openapi.schemas";
 import {
   Table,
@@ -35,6 +38,7 @@ const columns = [
   { name: "ZIEL", uid: "destination" },
   { name: "LOG", uid: "log" },
   { name: "BESCHREIBUNG", uid: "description" },
+  { name: "AKTIONEN", uid: "actions" },
 ];
 
 const actionColorMap: Record<string, ChipProps["color"]> = {
@@ -52,7 +56,22 @@ const FirewallRulesPage = () => {
     direction: "ascending",
   });
 
-  const { data, isLoading, error } = useFirewallControllerGetAllFirewallRules();
+  const { data, isLoading, error, refetch } =
+    useFirewallControllerGetAllFirewallRules();
+
+  const toggleMutation = useFirewallControllerToggleFirewallRule();
+
+  const handleToggleRule = useCallback(
+    async (uuid: string) => {
+      try {
+        await toggleMutation.mutateAsync({ params: { uuid } });
+        refetch();
+      } catch (error) {
+        console.error("Failed to toggle rule:", error);
+      }
+    },
+    [toggleMutation, refetch]
+  );
 
   const hasSearchFilter = Boolean(filterValue);
   const filteredItems = useMemo(() => {
@@ -227,11 +246,45 @@ const FirewallRulesPage = () => {
               {rule.description || "-"}
             </div>
           );
+        case "actions":
+          return (
+            <div className="relative flex justify-end items-center gap-2">
+              <Dropdown>
+                <DropdownTrigger>
+                  <Button isIconOnly size="sm" variant="light">
+                    <Icon
+                      icon="solar:menu-dots-bold"
+                      className="text-default-400"
+                      width={20}
+                    />
+                  </Button>
+                </DropdownTrigger>
+                <DropdownMenu aria-label="Rule Actions">
+                  <DropdownItem
+                    key="toggle"
+                    startContent={
+                      <Icon
+                        icon={
+                          rule.enabled
+                            ? "solar:power-linear"
+                            : "solar:power-bold"
+                        }
+                      />
+                    }
+                    onPress={() => handleToggleRule(rule.uuid)}
+                    color={rule.enabled ? "danger" : "success"}
+                  >
+                    {rule.enabled ? "Deaktivieren" : "Aktivieren"}
+                  </DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
+            </div>
+          );
         default:
           return cellValue;
       }
     },
-    []
+    [handleToggleRule]
   );
 
   const onSearchChange = useCallback((value?: string) => {

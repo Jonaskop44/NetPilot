@@ -30,8 +30,6 @@ export class AuthController {
   async microsoftCallback(@Req() req: Request, @Res() res: Response) {
     const user = (req as any).user;
 
-    console.log('Microsoft login successful, user:', user);
-
     // Store user info in session
     (req.session as any).user = user;
     (req.session as any).isAuthenticated = true;
