@@ -12,7 +12,7 @@ export default async function middleware(request: NextRequest) {
   if (sessionCookie) {
     try {
       const apiUrl =
-        process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api/v1";
+        process.env.NEXT_PUBLIC_API_URL;
 
       const response = await fetch(`${apiUrl}/auth/user`, {
         method: "GET",
