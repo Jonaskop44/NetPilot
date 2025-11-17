@@ -1,4 +1,5 @@
 import { NavSection } from "@/types/navItem.types";
+import { UserDtoRole } from "@/api/openapi.schemas";
 
 export const sidebarItems: NavSection[] = [
   {
@@ -13,6 +14,7 @@ export const sidebarItems: NavSection[] = [
         name: "User",
         icon: "solar:user-circle-linear",
         path: "/users",
+        allowedRoles: [UserDtoRole.ADMINISTRATOR],
       },
     ],
   },
@@ -23,6 +25,7 @@ export const sidebarItems: NavSection[] = [
         name: "Regeln",
         icon: "solar:settings-linear",
         path: "/dashboard/firewall/rules",
+        allowedRoles: [UserDtoRole.ADMINISTRATOR, UserDtoRole.TEACHER],
       },
     ],
   },

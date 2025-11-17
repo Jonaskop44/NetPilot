@@ -1,16 +1,19 @@
 "use client";
 
 import { useSidebar } from "@/context/SidebarProvider";
+import useAuth from "@/hooks/useAuth";
+import useNavigation from "@/hooks/useNavigation";
 import Link from "next/link";
 import Image from "next/image";
 import { Icon } from "@iconify/react";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { usePathname } from "next/navigation";
-import { sidebarItems } from "./sidebarItems";
 import SidebarItem from "./SidebarItem";
 
 const Sidebar = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
+  const { user } = useAuth();
+  const sidebarItems = useNavigation(user?.role);
   const pathname = usePathname();
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
   const subMenuRefs = useRef<Record<string, HTMLDivElement | null>>({});
