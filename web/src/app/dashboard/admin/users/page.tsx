@@ -19,6 +19,7 @@ import {
   DropdownMenu,
   DropdownItem,
   SortDescriptor,
+  Pagination,
 } from "@heroui/react";
 import { useAdminControllerGetAllUsers } from "@/api/admin/admin";
 import { UserDtoRole, type UserDto } from "@/api/openapi.schemas";
@@ -44,8 +45,9 @@ const UsersPage = () => {
     column: "id",
     direction: "ascending",
   });
+  const [page, setPage] = useState(1);
 
-  const { data, isLoading, error } = useAdminControllerGetAllUsers({ page: 1 });
+  const { data, isLoading, error } = useAdminControllerGetAllUsers({ page });
 
   const hasSearchFilter = Boolean(filterValue);
 
@@ -135,6 +137,29 @@ const UsersPage = () => {
     );
   }, [filterValue, onClear, onSearchChange, roleFilter]);
 
+  const bottomContent = useMemo(() => {
+    if (!data?.totalPages || data.totalPages <= 1) {
+      return null;
+    }
+
+    return (
+      <div className="flex w-full justify-center">
+        <Pagination
+          loop
+          isCompact
+          showControls
+          color="primary"
+          page={page}
+          total={data.totalPages}
+          onChange={(newPage) => {
+            console.log("Changing to page:", newPage);
+            setPage(newPage);
+          }}
+        />
+      </div>
+    );
+  }, [page, data?.totalPages]);
+
   const renderCell = useCallback((user: UserDto, columnKey: React.Key) => {
     const cellValue = user[columnKey as keyof UserDto];
 
@@ -212,6 +237,8 @@ const UsersPage = () => {
           isHeaderSticky
           topContent={topContent}
           topContentPlacement="outside"
+          bottomContent={bottomContent}
+          bottomContentPlacement="outside"
           sortDescriptor={sortDescriptor}
           onSortChange={setSortDescriptor}
           classNames={{
