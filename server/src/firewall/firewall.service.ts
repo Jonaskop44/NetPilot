@@ -43,13 +43,6 @@ export class FirewallService {
           destination_port: ruleData.destination_port || undefined,
           description: ruleData.description || undefined,
           log: ruleData.log === '1',
-          statetype: extractSelectedOption(ruleData.statetype),
-          quick: ruleData.quick === '1',
-          gateway: extractSelectedOption(ruleData.gateway),
-          sequence: ruleData.sequence,
-          categories: Array.isArray(ruleData.categories)
-            ? ruleData.categories
-            : [],
         };
       },
     );
