@@ -38,7 +38,7 @@ const columns = [
 const actionColorMap: Record<string, ChipProps["color"]> = {
   pass: "success",
   block: "danger",
-  reject: "danger",
+  reject: "warning",
 };
 
 const FirewallRulesPage = () => {
@@ -111,7 +111,7 @@ const FirewallRulesPage = () => {
         case "enabled":
           return (
             <Chip
-              color={rule.enabled ? "success" : "default"}
+              color={rule.enabled ? "success" : "danger"}
               variant="flat"
               size="sm"
             >
@@ -119,22 +119,40 @@ const FirewallRulesPage = () => {
             </Chip>
           );
         case "action":
+          const getActionIcon = () => {
+            switch (rule.action) {
+              case "pass":
+                return "solar:check-circle-linear";
+              case "block":
+                return "solar:close-circle-linear";
+              case "reject":
+                return "solar:shield-warning-linear";
+              default:
+                return "solar:question-circle-linear";
+            }
+          };
+
+          const getActionLabel = () => {
+            switch (rule.action) {
+              case "pass":
+                return "Pass";
+              case "block":
+                return "Block";
+              case "reject":
+                return "Reject";
+              default:
+                return rule.action;
+            }
+          };
+
           return (
             <Chip
               color={actionColorMap[rule.action]}
               variant="flat"
               size="sm"
-              startContent={
-                <Icon
-                  icon={
-                    rule.action === "pass"
-                      ? "solar:check-circle-linear"
-                      : "solar:close-circle-linear"
-                  }
-                />
-              }
+              startContent={<Icon icon={getActionIcon()} />}
             >
-              {rule.action}
+              {getActionLabel()}
             </Chip>
           );
         case "direction":
@@ -212,7 +230,7 @@ const FirewallRulesPage = () => {
           <Input
             isClearable
             className="w-full sm:max-w-[44%]"
-            placeholder="Suche nach Beschreibung, Quelle oder Ziel..."
+            placeholder="Suche nach Beschreibung, Quelle oder Ziel"
             startContent={<Icon icon="solar:magnifer-linear" />}
             value={filterValue}
             onClear={() => onClear()}

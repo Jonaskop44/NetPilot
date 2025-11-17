@@ -18,15 +18,15 @@ export class FirewallService {
     const rulesObject = data.filter.rules.rule;
 
     const allRules = Object.entries(rulesObject).map(
-      ([uuid, ruleData]: [string, FirewallRuleDto]) => {
-        const extractSelectedOption = (field: any) => {
-          if (!field || typeof field !== 'object') return null;
+      ([uuid, ruleData]: [string, any]) => {
+        const extractSelectedOption = (field: any): string | undefined => {
+          if (!field || typeof field !== 'object') return undefined;
 
           const selectedEntry = Object.entries(field).find(
-            ([_, value]: [string, any]) => value.selected === '1',
+            ([_, value]: [string, any]) => value.selected === 1,
           );
 
-          return selectedEntry ? selectedEntry[0] : null;
+          return selectedEntry ? selectedEntry[0] : undefined;
         };
 
         return {
@@ -35,11 +35,21 @@ export class FirewallService {
           action: extractSelectedOption(ruleData.action),
           direction: extractSelectedOption(ruleData.direction),
           ipprotocol: extractSelectedOption(ruleData.ipprotocol),
+          interface: extractSelectedOption(ruleData.interface),
           protocol: extractSelectedOption(ruleData.protocol),
-          source_net: ruleData.source_net ?? null,
-          destination_net: ruleData.destination_net ?? null,
-          description: ruleData.description ?? null,
+          source_net: ruleData.source_net || undefined,
+          source_port: ruleData.source_port || undefined,
+          destination_net: ruleData.destination_net || undefined,
+          destination_port: ruleData.destination_port || undefined,
+          description: ruleData.description || undefined,
           log: ruleData.log === '1',
+          statetype: extractSelectedOption(ruleData.statetype),
+          quick: ruleData.quick === '1',
+          gateway: extractSelectedOption(ruleData.gateway),
+          sequence: ruleData.sequence,
+          categories: Array.isArray(ruleData.categories)
+            ? ruleData.categories
+            : [],
         };
       },
     );
