@@ -83,6 +83,12 @@ export class FirewallService {
     // Apply changes
     await this.client.post('/firewall/filter/apply');
 
+    //Example Response
+    //        {
+    //   "result": "Enabled",
+    //   "changed": true
+    // }
+
     return data;
   }
 
@@ -91,21 +97,21 @@ export class FirewallService {
     const userId = session.user?.id;
 
     // 1. Set rule to desired state immediately
-    await this.toggleFirewallRule(dto.ruleUuid);
+    const result = await this.toggleFirewallRule(dto.ruleUuid);
 
-    // 2. Parse time string (HH:mm)
-    const [hours, minutes] = dto.revertAt.split(':').map(Number);
+    console.log('[METHOD] Set rule state result:', result);
+
+    // 2. Parse revertAt date string
+    const revertTime = new Date(dto.revertAt);
     const now = new Date();
-    const revertTime = new Date();
-    revertTime.setHours(hours, minutes, 0, 0);
 
-    // If the time is in the past today, schedule for tomorrow
+    // Validate that the revert time is in the future
     if (revertTime <= now) {
       throw new ConflictException('Revert time must be in the future');
     }
 
     // 3. Determine the reverse action
-    const reverseAction = dto.action === 'enable' ? 'disable' : 'enable';
+    const reverseAction = request.request === 'enable' ? 'disable' : 'enable';
 
     // 4. Schedule the reverse change
     if (userId) {
@@ -122,20 +128,11 @@ export class FirewallService {
     }
   }
 
-  async getScheduledChanges() {
-    return this.prisma.scheduledRuleChange.findMany({
-      where: {
-        executed: false,
-      },
-      orderBy: {
-        scheduledFor: 'asc',
-      },
-    });
-  }
-
   @Cron(CronExpression.EVERY_MINUTE)
   async processScheduledChanges() {
     const now = new Date();
+    console.log(`[CRON] Checking scheduled changes at ${now.toISOString()}`);
+
     const pendingChanges = await this.prisma.scheduledRuleChange.findMany({
       where: {
         executed: false,
@@ -145,9 +142,13 @@ export class FirewallService {
       },
     });
 
+    console.log(`[CRON] Found ${pendingChanges.length} pending changes`);
+
     for (const change of pendingChanges) {
       try {
-        await this.toggleFirewallRule(change.ruleUuid);
+        const result = await this.toggleFirewallRule(change.ruleUuid);
+
+        console.log('Set rule state result:', result);
 
         await this.prisma.scheduledRuleChange.update({
           where: { id: change.id },
@@ -156,9 +157,11 @@ export class FirewallService {
             executedAt: new Date(),
           },
         });
+
+        console.log(`[CRON] Successfully executed change ${change.id}`);
       } catch (error) {
         console.error(
-          `Failed to execute scheduled change ${change.id}:`,
+          `[CRON] Failed to execute scheduled change ${change.id}:`,
           error,
         );
       }

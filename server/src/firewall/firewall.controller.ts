@@ -75,18 +75,4 @@ export class FirewallController {
   ) {
     return this.firewallService.scheduleRuleChange(dto, request);
   }
-
-  @Get('scheduled-changes')
-  @ApiOperation({
-    summary: 'Get all scheduled rule changes',
-    description: 'Retrieves all scheduled firewall rule changes',
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'Successfully retrieved scheduled changes',
-    type: [ScheduledRuleChangeResponseDto],
-  })
-  async getScheduledChanges() {
-    return this.firewallService.getScheduledChanges();
-  }
 }

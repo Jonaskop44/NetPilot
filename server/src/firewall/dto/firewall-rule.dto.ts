@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import { IsDateString, IsEnum, IsNotEmpty, IsString } from 'class-validator';
 
 export class FirewallRuleDto {
   @ApiProperty({
@@ -172,23 +172,12 @@ export class ScheduleRuleChangeDto {
   ruleUuid: string;
 
   @ApiProperty({
-    description: 'Action to perform immediately (enable/disable)',
-    example: 'disable',
-    enum: ['enable', 'disable'],
-  })
-  @IsNotEmpty()
-  @IsEnum(
-    { enable: 'enable', disable: 'disable' },
-    { message: 'action must be either enable or disable' },
-  )
-  action: 'enable' | 'disable';
-
-  @ApiProperty({
     description: 'Time when the rule should be reverted back (HH:mm format)',
     example: '18:00',
   })
   @IsString()
   @IsNotEmpty()
+  @IsDateString()
   revertAt: string;
 }
 
