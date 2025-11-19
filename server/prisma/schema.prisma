@@ -15,11 +15,25 @@ enum Role {
 }
 
 model User {
-  id         Int      @id @default(autoincrement())
-  email      String   @unique
-  username   String
-  providerId String   @unique
-  role       Role     @default(STUDENT)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id                   Int                   @id @default(autoincrement())
+  email                String                @unique
+  username             String
+  providerId           String                @unique
+  role                 Role                  @default(STUDENT)
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+  scheduledRuleChanges ScheduledRuleChange[]
+}
+
+model ScheduledRuleChange {
+  id           Int       @id @default(autoincrement())
+  ruleUuid     String
+  action       String
+  scheduledFor DateTime
+  executed     Boolean   @default(false)
+  executedAt   DateTime?
+  createdBy    Int
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  user         User      @relation(fields: [createdBy], references: [id])
 }

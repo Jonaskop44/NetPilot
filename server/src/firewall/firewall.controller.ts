@@ -1,7 +1,19 @@
-import { Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Query,
+  UseGuards,
+  Body,
+  Request,
+} from '@nestjs/common';
 import { FirewallService } from './firewall.service';
 import { ApiOperation, ApiTags, ApiResponse, ApiQuery } from '@nestjs/swagger';
-import { FirewallRulesResponseDto } from './dto/firewall-rule.dto';
+import {
+  FirewallRulesResponseDto,
+  ScheduleRuleChangeDto,
+  ScheduledRuleChangeResponseDto,
+} from './dto/firewall-rule.dto';
 import { Roles } from 'src/auth/decorators/roles.decorators';
 import { Role } from 'generated/prisma';
 import { RolesGuard } from 'src/guard/roles.guard';
@@ -44,5 +56,37 @@ export class FirewallController {
   })
   async toggleFirewallRule(@Query('uuid') uuid: string) {
     return this.firewallService.toggleFirewallRule(uuid);
+  }
+
+  @Post('schedule-rule-change')
+  @ApiOperation({
+    summary: 'Toggle a firewall rule temporarily',
+    description:
+      'Immediately enables or disables a firewall rule, and automatically reverts it at the specified time',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Successfully toggled the rule and scheduled revert',
+    type: ScheduledRuleChangeResponseDto,
+  })
+  async scheduleRuleChange(
+    @Body() dto: ScheduleRuleChangeDto,
+    @Request() request,
+  ) {
+    return this.firewallService.scheduleRuleChange(dto, request);
+  }
+
+  @Get('scheduled-changes')
+  @ApiOperation({
+    summary: 'Get all scheduled rule changes',
+    description: 'Retrieves all scheduled firewall rule changes',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Successfully retrieved scheduled changes',
+    type: [ScheduledRuleChangeResponseDto],
+  })
+  async getScheduledChanges() {
+    return this.firewallService.getScheduledChanges();
   }
 }

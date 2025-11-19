@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
 
 export class FirewallRuleDto {
   @ApiProperty({
@@ -159,4 +160,71 @@ export class ToggleFirewallRuleDto {
     example: true,
   })
   changed: boolean;
+}
+
+export class ScheduleRuleChangeDto {
+  @ApiProperty({
+    description: 'UUID of the firewall rule',
+    example: 'e855ff5f-47b7-4251-91e0-234b35da7853',
+  })
+  @IsString()
+  @IsNotEmpty()
+  ruleUuid: string;
+
+  @ApiProperty({
+    description: 'Action to perform immediately (enable/disable)',
+    example: 'disable',
+    enum: ['enable', 'disable'],
+  })
+  @IsNotEmpty()
+  @IsEnum(['enable', 'disable'])
+  action: string;
+
+  @ApiProperty({
+    description: 'Time when the rule should be reverted back (HH:mm format)',
+    example: '18:00',
+  })
+  @IsString()
+  @IsNotEmpty()
+  revertAt: string;
+}
+
+export class ScheduledRuleChangeResponseDto {
+  @ApiProperty({
+    description: 'ID of the scheduled change',
+    example: 1,
+  })
+  id: number;
+
+  @ApiProperty({
+    description: 'UUID of the firewall rule',
+    example: 'e855ff5f-47b7-4251-91e0-234b35da7853',
+  })
+  ruleUuid: string;
+
+  @ApiProperty({
+    description:
+      'Action that will be performed (this reverts the immediate change)',
+    example: 'enable',
+  })
+  action: string;
+
+  @ApiProperty({
+    description: 'When the rule will be reverted',
+    example: '2025-11-20T18:00:00Z',
+  })
+  scheduledFor: Date;
+
+  @ApiProperty({
+    description: 'Whether the revert has been executed',
+    example: false,
+  })
+  executed: boolean;
+
+  @ApiProperty({
+    description: 'When the revert was executed',
+    example: null,
+    required: false,
+  })
+  executedAt?: Date;
 }

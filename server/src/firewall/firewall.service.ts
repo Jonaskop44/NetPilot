@@ -1,10 +1,20 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { OpnsenseClient } from './opnsense.client';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { ScheduleRuleChangeDto } from './dto/firewall-rule.dto';
+import { Cron, CronExpression } from '@nestjs/schedule';
+import { Request } from 'express';
 
 @Injectable()
 export class FirewallService {
   private opnsenseClient = new OpnsenseClient();
   private client = this.opnsenseClient.getClient();
+
+  constructor(private readonly prisma: PrismaService) {}
 
   async getAllFirewallRules() {
     const response = await this.client.get('/firewall/filter/get');
@@ -63,5 +73,84 @@ export class FirewallService {
     }
 
     return data;
+  }
+
+  async scheduleRuleChange(dto: ScheduleRuleChangeDto, request: Request) {
+    const session = request.session;
+    const userId = session.user?.id;
+
+    // 1. Toggle rule immediately
+    await this.toggleFirewallRule(dto.ruleUuid);
+
+    // 2. Parse time string (HH:mm)
+    const [hours, minutes] = dto.revertAt.split(':').map(Number);
+    const now = new Date();
+    const revertTime = new Date();
+    revertTime.setHours(hours, minutes, 0, 0);
+
+    // If the time is in the past today, schedule for tomorrow
+    if (revertTime <= now) {
+      throw new ConflictException('Revert time must be in the future');
+    }
+
+    // 3. Determine the reverse action
+    const reverseAction = dto.action === 'enable' ? 'disable' : 'enable';
+
+    // 4. Schedule the reverse change
+    if (userId) {
+      const scheduledChange = await this.prisma.scheduledRuleChange.create({
+        data: {
+          ruleUuid: dto.ruleUuid,
+          action: reverseAction,
+          scheduledFor: revertTime,
+          createdBy: userId,
+        },
+      });
+
+      return scheduledChange;
+    }
+  }
+
+  async getScheduledChanges() {
+    return this.prisma.scheduledRuleChange.findMany({
+      where: {
+        executed: false,
+      },
+      orderBy: {
+        scheduledFor: 'asc',
+      },
+    });
+  }
+
+  @Cron(CronExpression.EVERY_MINUTE)
+  async processScheduledChanges() {
+    const now = new Date();
+    const pendingChanges = await this.prisma.scheduledRuleChange.findMany({
+      where: {
+        executed: false,
+        scheduledFor: {
+          lte: now,
+        },
+      },
+    });
+
+    for (const change of pendingChanges) {
+      try {
+        await this.toggleFirewallRule(change.ruleUuid);
+
+        await this.prisma.scheduledRuleChange.update({
+          where: { id: change.id },
+          data: {
+            executed: true,
+            executedAt: new Date(),
+          },
+        });
+      } catch (error) {
+        console.error(
+          `Failed to execute scheduled change ${change.id}:`,
+          error,
+        );
+      }
+    }
   }
 }
