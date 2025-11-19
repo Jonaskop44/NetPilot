@@ -2,7 +2,7 @@ import { useMemo, useState, useCallback } from "react";
 import type { Selection } from "@heroui/react";
 import type { UserDto } from "@/api/openapi.schemas";
 
-export const useUserFilters = (users: UserDto[] | undefined) => {
+const useUserFilters = (users: UserDto[] | undefined) => {
   const [filterValue, setFilterValue] = useState("");
   const [roleFilter, setRoleFilter] = useState<Selection>("all");
 
@@ -49,3 +49,5 @@ export const useUserFilters = (users: UserDto[] | undefined) => {
     onSearchChange,
   };
 };
+
+export default useUserFilters;

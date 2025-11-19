@@ -7,7 +7,7 @@ interface UserTableBottomContentProps {
   onPageChange: (page: number) => void;
 }
 
-export const UserTableBottomContent: React.FC<UserTableBottomContentProps> = ({
+const UserTableBottomContent: React.FC<UserTableBottomContentProps> = ({
   page,
   totalPages,
   onPageChange,
@@ -30,3 +30,5 @@ export const UserTableBottomContent: React.FC<UserTableBottomContentProps> = ({
     </div>
   );
 };
+
+export default UserTableBottomContent;

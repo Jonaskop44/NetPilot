@@ -19,7 +19,7 @@ interface UserTableTopContentProps {
   onRoleFilterChange: (keys: Selection) => void;
 }
 
-export const UserTableTopContent: React.FC<UserTableTopContentProps> = ({
+const UserTableTopContent: React.FC<UserTableTopContentProps> = ({
   filterValue,
   roleFilter,
   onClear,
@@ -68,3 +68,5 @@ export const UserTableTopContent: React.FC<UserTableTopContentProps> = ({
     </div>
   );
 };
+
+export default UserTableTopContent;

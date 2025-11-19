@@ -23,7 +23,7 @@ interface UserTableCellProps {
   onDeleteUser: (userId: number) => void;
 }
 
-export const UserTableCell: React.FC<UserTableCellProps> = ({
+const UserTableCell: React.FC<UserTableCellProps> = ({
   user,
   columnKey,
   onEditRole,
@@ -109,3 +109,5 @@ export const UserTableCell: React.FC<UserTableCellProps> = ({
       return cellValue;
   }
 };
+
+export default UserTableCell;
