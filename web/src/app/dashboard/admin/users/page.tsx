@@ -1,7 +1,6 @@
 "use client";
 
-import type { ChipProps } from "@heroui/react";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useState } from "react";
 import {
   Table,
   TableHeader,
@@ -9,309 +8,62 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  Chip,
   Spinner,
-  Selection,
-  Input,
-  Dropdown,
-  DropdownTrigger,
-  Button,
-  DropdownMenu,
-  DropdownItem,
-  SortDescriptor,
-  Pagination,
-  Tooltip,
 } from "@heroui/react";
 import {
   useAdminControllerEditUserRole,
   useAdminControllerGetAllUsers,
 } from "@/api/admin/admin";
-import { UserDtoRole, type UserDto } from "@/api/openapi.schemas";
-import { Icon } from "@iconify/react";
-
-const columns = [
-  { name: "ID", uid: "id", sortable: true },
-  { name: "EMAIL", uid: "email" },
-  { name: "USERNAME", uid: "username" },
-  { name: "ROLE", uid: "role", sortable: true },
-  { name: "ACTIONS", uid: "actions" },
-];
-
-const roleColorMap: Record<string, ChipProps["color"]> = {
-  ADMINISTRATOR: "success",
-  TEACHER: "primary",
-  STUDENT: "warning",
-};
-
-const editAction = [
-  {
-    key: "administrator",
-    name: `Als ${UserDtoRole.ADMINISTRATOR} setzen`,
-    icon: "solar:crown-line-duotone",
-    action: (
-      userId: number,
-      editUserRole: (args: { id: number; data: { role: UserDtoRole } }) => void
-    ) => {
-      editUserRole({
-        id: userId,
-        data: { role: UserDtoRole.ADMINISTRATOR },
-      });
-    },
-  },
-  {
-    key: "teacher",
-    name: `Als ${UserDtoRole.TEACHER} setzen`,
-    icon: "solar:meditation-bold",
-    action: (
-      userId: number,
-      editUserRole: (args: { id: number; data: { role: UserDtoRole } }) => void
-    ) => {
-      editUserRole({
-        id: userId,
-        data: { role: UserDtoRole.ADMINISTRATOR },
-      });
-    },
-  },
-  {
-    key: "student",
-    name: `Als ${UserDtoRole.STUDENT} setzen`,
-    icon: "solar:face-scan-circle-linear",
-    action: (
-      userId: number,
-      editUserRole: (args: { id: number; data: { role: UserDtoRole } }) => void
-    ) => {
-      editUserRole({
-        id: userId,
-        data: { role: UserDtoRole.STUDENT },
-      });
-    },
-  },
-];
+import type { UserDtoRole } from "@/api/openapi.schemas";
+import { COLUMNS } from "./constants";
+import { useUserFilters } from "../../../../hooks/admin/user/useUserFilters";
+import { useUserSorting } from "../../../../hooks/admin/user/useUserSorting";
+import { UserTableTopContent } from "../../../../components/Dashboard/Admin/User/UserTableTopContent";
+import { UserTableBottomContent } from "../../../../components/Dashboard/Admin/User/UserTableBottomContent";
+import { UserTableCell } from "../../../../components/Dashboard/Admin/User/UserTableCell";
+import TableError from "@/components/Common/TableError";
+import { toast } from "sonner";
 
 const UsersPage = () => {
-  const [filterValue, setFilterValue] = useState("");
-  const [roleFilter, setRoleFilter] = useState<Selection>("all");
-  const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
-    column: "id",
-    direction: "ascending",
-  });
   const [page, setPage] = useState(1);
 
-  const { data, isLoading, error } = useAdminControllerGetAllUsers({ page });
-
+  const { data, isLoading, error, refetch } = useAdminControllerGetAllUsers({
+    page,
+  });
   const { mutate: editUserRole } = useAdminControllerEditUserRole();
 
-  const hasSearchFilter = Boolean(filterValue);
+  const {
+    filterValue,
+    roleFilter,
+    filteredUsers,
+    setRoleFilter,
+    onClear,
+    onSearchChange,
+  } = useUserFilters(data?.users);
 
-  const filteredUsers = useMemo(() => {
-    let filteredItems = [...(data?.users || [])];
+  const { sortDescriptor, setSortDescriptor, sortedUsers } =
+    useUserSorting(filteredUsers);
 
-    if (hasSearchFilter) {
-      filteredItems = filteredItems.filter(
-        (user) =>
-          user.email.toLowerCase().includes(filterValue.toLowerCase()) ||
-          user.username.toLowerCase().includes(filterValue.toLowerCase())
-      );
-    }
-
-    if (roleFilter !== "all" && roleFilter.size > 0) {
-      filteredItems = filteredItems.filter((user) =>
-        Array.from(roleFilter).includes(user.role)
-      );
-    }
-
-    return filteredItems;
-  }, [data?.users, filterValue, hasSearchFilter, roleFilter]);
-
-  const sortedUsers = useMemo(() => {
-    return [...filteredUsers].sort((a, b) => {
-      const first = a[sortDescriptor.column as keyof UserDto];
-      const second = b[sortDescriptor.column as keyof UserDto];
-      const cmp = first < second ? -1 : first > second ? 1 : 0;
-
-      return sortDescriptor.direction === "descending" ? -cmp : cmp;
-    });
-  }, [filteredUsers, sortDescriptor]);
-
-  const onClear = useCallback(() => {
-    setFilterValue("");
-  }, []);
-
-  const onSearchChange = useCallback((value?: string) => {
-    if (value) {
-      setFilterValue(value);
-    } else {
-      setFilterValue("");
-    }
-  }, []);
-
-  const topContent = useMemo(() => {
-    return (
-      <div className="flex flex-col gap-4">
-        <div className="flex justify-between gap-3 items-end">
-          <Input
-            isClearable
-            className="w-full sm:max-w-[44%]"
-            placeholder="Suche nach Name oder E-Mail"
-            startContent={<Icon icon="solar:magnifer-linear" />}
-            value={filterValue}
-            onClear={() => onClear()}
-            onValueChange={onSearchChange}
-          />
-          <div className="flex gap-3">
-            <Dropdown>
-              <DropdownTrigger>
-                <Button
-                  endContent={<Icon icon="solar:alt-arrow-down-linear" />}
-                  variant="flat"
-                >
-                  Rollen Filter
-                </Button>
-              </DropdownTrigger>
-              <DropdownMenu
-                disallowEmptySelection
-                aria-label="Rollen Filter"
-                closeOnSelect={false}
-                selectedKeys={roleFilter}
-                selectionMode="multiple"
-                onSelectionChange={setRoleFilter}
-              >
-                <DropdownItem key={UserDtoRole.ADMINISTRATOR}>
-                  Administrator
-                </DropdownItem>
-                <DropdownItem key={UserDtoRole.TEACHER}>Teacher</DropdownItem>
-                <DropdownItem key={UserDtoRole.STUDENT}>Student</DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
-          </div>
-        </div>
-      </div>
-    );
-  }, [filterValue, onClear, onSearchChange, roleFilter]);
-
-  const bottomContent = useMemo(() => {
-    if (!data?.totalPages || data.totalPages <= 1) {
-      return null;
-    }
-
-    return (
-      <div className="flex w-full justify-center">
-        <Pagination
-          loop
-          isCompact
-          showControls
-          color="primary"
-          page={page}
-          total={data.totalPages}
-          onChange={(newPage) => {
-            console.log("Changing to page:", newPage);
-            setPage(newPage);
-          }}
-        />
-      </div>
-    );
-  }, [page, data?.totalPages]);
-
-  const renderCell = useCallback(
-    (user: UserDto, columnKey: React.Key) => {
-      const cellValue = user[columnKey as keyof UserDto];
-
-      switch (columnKey) {
-        case "id":
-          return (
-            <Chip size="md" variant="flat">
-              {user.id}
-            </Chip>
-          );
-        case "email":
-          return (
-            <Chip size="md" variant="flat">
-              <a href={`mailto:${user.email}`} className=" hover:underline">
-                {user.email}
-              </a>
-            </Chip>
-          );
-        case "username":
-          return (
-            <Chip size="md" variant="flat">
-              {user.username}
-            </Chip>
-          );
-        case "role":
-          const getRoleIcon = () => {
-            switch (user.role) {
-              case "ADMINISTRATOR":
-                return "solar:crown-line-duotone";
-              case "TEACHER":
-                return "solar:meditation-bold";
-              case "STUDENT":
-                return "solar:face-scan-circle-linear";
-              default:
-                return "solar:question-circle-linear";
-            }
-          };
-
-          return (
-            <Chip
-              className="capitalize"
-              color={roleColorMap[user.role]}
-              size="md"
-              variant="flat"
-              startContent={<Icon icon={getRoleIcon()} />}
-            >
-              {user.role}
-            </Chip>
-          );
-        case "actions":
-          return (
-            <div className="relative flex items-center gap-2">
-              <Dropdown>
-                <DropdownTrigger>
-                  <Button isIconOnly size="md" variant="light">
-                    <Icon
-                      icon="mingcute:pencil-fill"
-                      className="text-default-400"
-                    />
-                  </Button>
-                </DropdownTrigger>
-                <DropdownMenu aria-label="Benutzer Aktionen">
-                  {editAction.map((action) => (
-                    <DropdownItem
-                      key={action.key}
-                      startContent={<Icon icon={action.icon} />}
-                      onClick={() => {
-                        action.action(user.id, editUserRole);
-                      }}
-                    >
-                      {action.name}
-                    </DropdownItem>
-                  ))}
-                </DropdownMenu>
-              </Dropdown>
-              <Tooltip color="danger" content="Benutzer löschen">
-                <Button isIconOnly size="md" variant="light" color="danger">
-                  <Icon icon="solar:trash-bin-trash-bold" />
-                </Button>
-              </Tooltip>
-            </div>
-          );
-        default:
-          return cellValue;
+  const handleEditRole = (userId: number, role: UserDtoRole) => {
+    editUserRole(
+      {
+        id: userId,
+        data: { role },
+      },
+      {
+        onSuccess: () => {
+          toast.success("Rolle erfolgreich aktualisiert");
+          refetch();
+        },
+        onError() {
+          toast.error(`Fehler beim Aktualisieren der Rolle`);
+        },
       }
-    },
-    [editUserRole]
-  );
+    );
+  };
 
   if (error) {
-    return (
-      <div className="flex flex-col items-center justify-center h-full">
-        <Icon
-          icon="solar:danger-circle-linear"
-          className="text-danger text-6xl mb-4"
-        />
-        <p className="text-danger">Fehler beim Laden der User</p>
-      </div>
-    );
+    return <TableError />;
   }
 
   return (
@@ -323,9 +75,23 @@ const UsersPage = () => {
         <Table
           aria-label="Users table"
           isHeaderSticky
-          topContent={topContent}
+          topContent={
+            <UserTableTopContent
+              filterValue={filterValue}
+              roleFilter={roleFilter}
+              onClear={onClear}
+              onSearchChange={onSearchChange}
+              onRoleFilterChange={setRoleFilter}
+            />
+          }
           topContentPlacement="outside"
-          bottomContent={bottomContent}
+          bottomContent={
+            <UserTableBottomContent
+              page={page}
+              totalPages={data?.totalPages}
+              onPageChange={setPage}
+            />
+          }
           bottomContentPlacement="outside"
           sortDescriptor={sortDescriptor}
           onSortChange={setSortDescriptor}
@@ -334,7 +100,7 @@ const UsersPage = () => {
             wrapper: "max-h-full overflow-auto scrollbar-hide",
           }}
         >
-          <TableHeader columns={columns}>
+          <TableHeader columns={COLUMNS}>
             {(column) => (
               <TableColumn key={column.uid} allowsSorting={column.sortable}>
                 {column.name}
@@ -350,7 +116,13 @@ const UsersPage = () => {
             {(item) => (
               <TableRow key={item.id}>
                 {(columnKey) => (
-                  <TableCell>{renderCell(item, columnKey)}</TableCell>
+                  <TableCell>
+                    <UserTableCell
+                      user={item}
+                      columnKey={columnKey}
+                      onEditRole={handleEditRole}
+                    />
+                  </TableCell>
                 )}
               </TableRow>
             )}

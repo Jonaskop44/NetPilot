@@ -5,6 +5,7 @@ import {
   useFirewallControllerToggleFirewallRule,
 } from "@/api/firewall/firewall";
 import type { FirewallRuleDto } from "@/api/openapi.schemas";
+import TableError from "@/components/Common/TableError";
 import {
   Table,
   TableHeader,
@@ -364,15 +365,7 @@ const FirewallRulesPage = () => {
   }, [filterValue, actionFilter, directionFilter, onSearchChange, onClear]);
 
   if (error) {
-    return (
-      <div className="flex flex-col items-center justify-center h-full">
-        <Icon
-          icon="solar:danger-circle-linear"
-          className="text-danger text-6xl mb-4"
-        />
-        <p className="text-danger">Fehler beim Laden der Firewall-Regeln</p>
-      </div>
-    );
+    return <TableError />;
   }
 
   return (
