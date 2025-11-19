@@ -18,6 +18,7 @@ interface FirewallTableTopContentProps {
   onSearchChange: (value?: string) => void;
   onActionFilterChange: (keys: Selection) => void;
   onDirectionFilterChange: (keys: Selection) => void;
+  onAddRule: () => void;
 }
 
 const FirewallTableTopContent: FC<FirewallTableTopContentProps> = ({
@@ -28,6 +29,7 @@ const FirewallTableTopContent: FC<FirewallTableTopContentProps> = ({
   onSearchChange,
   onActionFilterChange,
   onDirectionFilterChange,
+  onAddRule,
 }) => {
   return (
     <div className="flex flex-col gap-4">
@@ -86,6 +88,13 @@ const FirewallTableTopContent: FC<FirewallTableTopContentProps> = ({
               <DropdownItem key="out">Ausgehend</DropdownItem>
             </DropdownMenu>
           </Dropdown>
+          <Button
+            color="primary"
+            startContent={<Icon icon="humbleicons:plus" />}
+            onPress={onAddRule}
+          >
+            Regel hinzufügen
+          </Button>
         </div>
       </div>
     </div>
