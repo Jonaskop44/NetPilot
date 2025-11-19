@@ -11,6 +11,7 @@ import {
   Spinner,
 } from "@heroui/react";
 import {
+  useAdminControllerDeleteUser,
   useAdminControllerEditUserRole,
   useAdminControllerGetAllUsers,
 } from "@/api/admin/admin";
@@ -31,6 +32,7 @@ const UsersPage = () => {
     page,
   });
   const { mutate: editUserRole } = useAdminControllerEditUserRole();
+  const { mutate: deleteUser } = useAdminControllerDeleteUser();
 
   const {
     filterValue,
@@ -57,6 +59,21 @@ const UsersPage = () => {
         },
         onError() {
           toast.error(`Fehler beim Aktualisieren der Rolle`);
+        },
+      }
+    );
+  };
+
+  const handleDeleteUser = (userId: number) => {
+    deleteUser(
+      { id: userId },
+      {
+        onSuccess: () => {
+          toast.success("User erfolgreich gelöscht");
+          refetch();
+        },
+        onError() {
+          toast.error(`Fehler beim Löschen des Users`);
         },
       }
     );
@@ -121,6 +138,7 @@ const UsersPage = () => {
                       user={item}
                       columnKey={columnKey}
                       onEditRole={handleEditRole}
+                      onDeleteUser={handleDeleteUser}
                     />
                   </TableCell>
                 )}

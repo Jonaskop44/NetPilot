@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
@@ -45,5 +46,11 @@ export class AdminController {
     @Request() request,
   ) {
     return this.adminService.editUserRole(id, dto.role, request);
+  }
+
+  @Delete('user/:id')
+  @ApiOperation({ summary: 'Delete a user by ID' })
+  async deleteUser(@Param('id') id: number, @Request() request) {
+    return this.adminService.deleteUser(id, request);
   }
 }

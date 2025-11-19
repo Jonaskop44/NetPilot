@@ -59,4 +59,26 @@ export class AdminService {
       data: { role },
     });
   }
+
+  async deleteUser(userId: number, request: Request) {
+    const user = request.session.user;
+
+    const dbUser = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!dbUser) throw new NotFoundException('User not found');
+
+    if (userId === user?.id) {
+      throw new ConflictException('You cannot delete your own account');
+    } else if (dbUser?.role === Role.ADMINISTRATOR) {
+      throw new ConflictException(
+        'You cannot delete another administrator account',
+      );
+    }
+
+    return this.prisma.user.delete({
+      where: { id: userId },
+    });
+  }
 }

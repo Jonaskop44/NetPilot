@@ -20,12 +20,14 @@ interface UserTableCellProps {
   user: UserDto;
   columnKey: React.Key;
   onEditRole: (userId: number, role: UserDtoRole) => void;
+  onDeleteUser: (userId: number) => void;
 }
 
 export const UserTableCell: React.FC<UserTableCellProps> = ({
   user,
   columnKey,
   onEditRole,
+  onDeleteUser,
 }) => {
   const cellValue = user[columnKey as keyof UserDto];
 
@@ -69,7 +71,7 @@ export const UserTableCell: React.FC<UserTableCellProps> = ({
     case "actions":
       return (
         <div className="relative flex items-center gap-2">
-          <Dropdown>
+          <Dropdown showArrow>
             <DropdownTrigger>
               <Button isIconOnly size="md" variant="light">
                 <Icon
@@ -91,7 +93,13 @@ export const UserTableCell: React.FC<UserTableCellProps> = ({
             </DropdownMenu>
           </Dropdown>
           <Tooltip color="danger" content="Benutzer löschen">
-            <Button isIconOnly size="md" variant="light" color="danger">
+            <Button
+              isIconOnly
+              size="md"
+              variant="light"
+              color="danger"
+              onPress={() => onDeleteUser(user.id)}
+            >
               <Icon icon="solar:trash-bin-trash-bold" />
             </Button>
           </Tooltip>
