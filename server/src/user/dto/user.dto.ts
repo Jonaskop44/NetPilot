@@ -1,17 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Role } from 'generated/prisma';
 
-export class UserResponseErrorDto {
-  @ApiProperty({ example: 'User not found', description: 'Error message' })
-  message: string;
-
-  @ApiProperty({ example: 'Unauthorized', description: 'Error message' })
-  error: string;
-
-  @ApiProperty({ example: 404, description: 'HTTP status code' })
-  statusCode: number;
-}
-
 export class UserDto {
   @ApiProperty({ example: 1, description: 'User ID' })
   id: number;

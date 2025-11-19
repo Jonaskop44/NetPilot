@@ -1,7 +1,20 @@
-import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Query,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AdminService } from './admin.service';
-import { PageQueryDto, PaginatedUsersResponseDto } from './dto/admin.dto';
+import {
+  PageQueryDto,
+  PaginatedUsersResponseDto,
+  UserRoleEditDto,
+} from './dto/admin.dto';
 import { Roles } from 'src/auth/decorators/roles.decorators';
 import { Role } from 'generated/prisma';
 import { RolesGuard } from 'src/guard/roles.guard';
@@ -22,5 +35,15 @@ export class AdminController {
   })
   async getAllUsers(@Query() query: PageQueryDto) {
     return this.adminService.getAllUsers(query.page);
+  }
+
+  @Patch('user/role/:id')
+  @ApiOperation({ summary: 'Edit a user role' })
+  async editUserRole(
+    @Param('id') id: number,
+    @Body() dto: UserRoleEditDto,
+    @Request() request,
+  ) {
+    return this.adminService.editUserRole(id, dto.role, request);
   }
 }

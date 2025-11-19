@@ -20,8 +20,12 @@ import {
   DropdownItem,
   SortDescriptor,
   Pagination,
+  Tooltip,
 } from "@heroui/react";
-import { useAdminControllerGetAllUsers } from "@/api/admin/admin";
+import {
+  useAdminControllerEditUserRole,
+  useAdminControllerGetAllUsers,
+} from "@/api/admin/admin";
 import { UserDtoRole, type UserDto } from "@/api/openapi.schemas";
 import { Icon } from "@iconify/react";
 
@@ -30,6 +34,7 @@ const columns = [
   { name: "EMAIL", uid: "email" },
   { name: "USERNAME", uid: "username" },
   { name: "ROLE", uid: "role", sortable: true },
+  { name: "ACTIONS", uid: "actions" },
 ];
 
 const roleColorMap: Record<string, ChipProps["color"]> = {
@@ -37,6 +42,51 @@ const roleColorMap: Record<string, ChipProps["color"]> = {
   TEACHER: "primary",
   STUDENT: "warning",
 };
+
+const editAction = [
+  {
+    key: "administrator",
+    name: `Als ${UserDtoRole.ADMINISTRATOR} setzen`,
+    icon: "solar:crown-line-duotone",
+    action: (
+      userId: number,
+      editUserRole: (args: { id: number; data: { role: UserDtoRole } }) => void
+    ) => {
+      editUserRole({
+        id: userId,
+        data: { role: UserDtoRole.ADMINISTRATOR },
+      });
+    },
+  },
+  {
+    key: "teacher",
+    name: `Als ${UserDtoRole.TEACHER} setzen`,
+    icon: "solar:meditation-bold",
+    action: (
+      userId: number,
+      editUserRole: (args: { id: number; data: { role: UserDtoRole } }) => void
+    ) => {
+      editUserRole({
+        id: userId,
+        data: { role: UserDtoRole.ADMINISTRATOR },
+      });
+    },
+  },
+  {
+    key: "student",
+    name: `Als ${UserDtoRole.STUDENT} setzen`,
+    icon: "solar:face-scan-circle-linear",
+    action: (
+      userId: number,
+      editUserRole: (args: { id: number; data: { role: UserDtoRole } }) => void
+    ) => {
+      editUserRole({
+        id: userId,
+        data: { role: UserDtoRole.STUDENT },
+      });
+    },
+  },
+];
 
 const UsersPage = () => {
   const [filterValue, setFilterValue] = useState("");
@@ -48,6 +98,8 @@ const UsersPage = () => {
   const [page, setPage] = useState(1);
 
   const { data, isLoading, error } = useAdminControllerGetAllUsers({ page });
+
+  const { mutate: editUserRole } = useAdminControllerEditUserRole();
 
   const hasSearchFilter = Boolean(filterValue);
 
@@ -160,59 +212,95 @@ const UsersPage = () => {
     );
   }, [page, data?.totalPages]);
 
-  const renderCell = useCallback((user: UserDto, columnKey: React.Key) => {
-    const cellValue = user[columnKey as keyof UserDto];
+  const renderCell = useCallback(
+    (user: UserDto, columnKey: React.Key) => {
+      const cellValue = user[columnKey as keyof UserDto];
 
-    switch (columnKey) {
-      case "id":
-        return (
-          <Chip size="md" variant="flat">
-            {user.id}
-          </Chip>
-        );
-      case "email":
-        return (
-          <Chip size="md" variant="flat">
-            <a href={`mailto:${user.email}`} className=" hover:underline">
-              {user.email}
-            </a>
-          </Chip>
-        );
-      case "username":
-        return (
-          <Chip size="md" variant="flat">
-            {user.username}
-          </Chip>
-        );
-      case "role":
-        const getRoleIcon = () => {
-          switch (user.role) {
-            case "ADMINISTRATOR":
-              return "solar:crown-line-duotone";
-            case "TEACHER":
-              return "solar:meditation-bold";
-            case "STUDENT":
-              return "solar:face-scan-circle-linear";
-            default:
-              return "solar:question-circle-linear";
-          }
-        };
+      switch (columnKey) {
+        case "id":
+          return (
+            <Chip size="md" variant="flat">
+              {user.id}
+            </Chip>
+          );
+        case "email":
+          return (
+            <Chip size="md" variant="flat">
+              <a href={`mailto:${user.email}`} className=" hover:underline">
+                {user.email}
+              </a>
+            </Chip>
+          );
+        case "username":
+          return (
+            <Chip size="md" variant="flat">
+              {user.username}
+            </Chip>
+          );
+        case "role":
+          const getRoleIcon = () => {
+            switch (user.role) {
+              case "ADMINISTRATOR":
+                return "solar:crown-line-duotone";
+              case "TEACHER":
+                return "solar:meditation-bold";
+              case "STUDENT":
+                return "solar:face-scan-circle-linear";
+              default:
+                return "solar:question-circle-linear";
+            }
+          };
 
-        return (
-          <Chip
-            className="capitalize"
-            color={roleColorMap[user.role]}
-            size="md"
-            variant="flat"
-            startContent={<Icon icon={getRoleIcon()} />}
-          >
-            {user.role}
-          </Chip>
-        );
-      default:
-        return cellValue;
-    }
-  }, []);
+          return (
+            <Chip
+              className="capitalize"
+              color={roleColorMap[user.role]}
+              size="md"
+              variant="flat"
+              startContent={<Icon icon={getRoleIcon()} />}
+            >
+              {user.role}
+            </Chip>
+          );
+        case "actions":
+          return (
+            <div className="relative flex items-center gap-2">
+              <Dropdown>
+                <DropdownTrigger>
+                  <Button isIconOnly size="md" variant="light">
+                    <Icon
+                      icon="mingcute:pencil-fill"
+                      className="text-default-400"
+                    />
+                  </Button>
+                </DropdownTrigger>
+                <DropdownMenu aria-label="Benutzer Aktionen">
+                  {editAction.map((action) => (
+                    <DropdownItem
+                      key={action.key}
+                      startContent={<Icon icon={action.icon} />}
+                      onClick={() => {
+                        action.action(user.id, editUserRole);
+                      }}
+                    >
+                      {action.name}
+                    </DropdownItem>
+                  ))}
+                </DropdownMenu>
+              </Dropdown>
+              <Tooltip color="danger" content="Benutzer löschen">
+                <Button isIconOnly size="md" variant="light" color="danger">
+                  <Icon icon="solar:trash-bin-trash-bold" />
+                </Button>
+              </Tooltip>
+            </div>
+          );
+        default:
+          return cellValue;
+      }
+    },
+    [editUserRole]
+  );
 
   if (error) {
     return (
