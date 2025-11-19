@@ -6,6 +6,7 @@ import {
   DropdownTrigger,
   DropdownMenu,
   DropdownItem,
+  Tooltip,
 } from "@heroui/react";
 import { Icon } from "@iconify/react";
 import type { FirewallRuleDto } from "@/api/openapi.schemas";
@@ -36,13 +37,31 @@ const FirewallTableCell: FC<FirewallTableCellProps> = ({
   switch (columnKey) {
     case "enabled":
       return (
-        <Chip
-          color={rule.enabled ? "success" : "danger"}
-          variant="flat"
-          size="sm"
-        >
-          {rule.enabled ? "Aktiv" : "Inaktiv"}
-        </Chip>
+        <>
+          {rule.schedule ? (
+            <Tooltip
+              content={`Geplant bis: ${new Date(rule.schedule.scheduledFor).toLocaleString()}`}
+              showArrow
+            >
+              <Chip
+                color="primary"
+                variant="flat"
+                size="sm"
+                startContent={<Icon icon="solar:clock-circle-linear" />}
+              >
+                {rule.enabled ? "Aktiv" : "Inaktiv"}
+              </Chip>
+            </Tooltip>
+          ) : (
+            <Chip
+              color={rule.enabled ? "success" : "danger"}
+              variant="flat"
+              size="sm"
+            >
+              {rule.enabled ? "Aktiv" : "Inaktiv"}
+            </Chip>
+          )}
+        </>
       );
     case "action":
       return (

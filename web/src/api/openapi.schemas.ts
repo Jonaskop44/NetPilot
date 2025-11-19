@@ -51,6 +51,11 @@ export interface ErrorResponseDto {
   error: string;
 }
 
+export interface RuleScheduleDto {
+  /** When the rule will be reverted */
+  scheduledFor: string;
+}
+
 /**
  * Rule action (pass/block/reject)
  */
@@ -93,7 +98,7 @@ export const FirewallRuleDtoIpprotocol = {
  * Active schedule for this rule
  * @nullable
  */
-export type FirewallRuleDtoSchedule = { [key: string]: unknown } | null;
+export type FirewallRuleDtoSchedule = RuleScheduleDto | null;
 
 export interface FirewallRuleDto {
   /** Unique identifier for the rule */

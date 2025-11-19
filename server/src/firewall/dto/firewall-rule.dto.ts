@@ -1,6 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsDateString, IsEnum, IsNotEmpty, IsString } from 'class-validator';
 
+export class RuleScheduleDto {
+  @ApiProperty({
+    description: 'When the rule will be reverted',
+    example: '2025-11-19T19:30:00.000Z',
+  })
+  scheduledFor: Date;
+}
+
 export class FirewallRuleDto {
   @ApiProperty({
     description: 'Unique identifier for the rule',
@@ -137,14 +145,9 @@ export class FirewallRuleDto {
     description: 'Active schedule for this rule',
     required: false,
     nullable: true,
-    example: {
-      scheduledFor: '2025-11-19T19:30:00.000Z',
-      executed: false,
-    },
+    type: RuleScheduleDto,
   })
-  schedule?: {
-    scheduledFor: Date;
-  } | null;
+  schedule?: RuleScheduleDto | null;
 }
 
 export class FirewallRulesResponseDto {
