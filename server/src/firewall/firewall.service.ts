@@ -63,6 +63,14 @@ export class FirewallService {
   }
 
   async toggleFirewallRule(uuid: string) {
+    // Get current rule state
+    const rulesResponse = await this.client.get('/firewall/filter/get');
+    const rulesData = rulesResponse.data;
+
+    if (!rulesData?.filter?.rules?.rule?.[uuid]) {
+      throw new NotFoundException(`Rule with UUID ${uuid} not found`);
+    }
+
     const response = await this.client.post(
       `/firewall/filter/toggleRule//${uuid}`,
     );
@@ -72,6 +80,9 @@ export class FirewallService {
       throw new NotFoundException('No data returned from OPNsense API');
     }
 
+    // Apply changes
+    await this.client.post('/firewall/filter/apply');
+
     return data;
   }
 
@@ -79,7 +90,7 @@ export class FirewallService {
     const session = request.session;
     const userId = session.user?.id;
 
-    // 1. Toggle rule immediately
+    // 1. Set rule to desired state immediately
     await this.toggleFirewallRule(dto.ruleUuid);
 
     // 2. Parse time string (HH:mm)

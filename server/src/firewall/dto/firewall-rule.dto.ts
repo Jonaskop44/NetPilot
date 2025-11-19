@@ -177,8 +177,11 @@ export class ScheduleRuleChangeDto {
     enum: ['enable', 'disable'],
   })
   @IsNotEmpty()
-  @IsEnum(['enable', 'disable'])
-  action: string;
+  @IsEnum(
+    { enable: 'enable', disable: 'disable' },
+    { message: 'action must be either enable or disable' },
+  )
+  action: 'enable' | 'disable';
 
   @ApiProperty({
     description: 'Time when the rule should be reverted back (HH:mm format)',
