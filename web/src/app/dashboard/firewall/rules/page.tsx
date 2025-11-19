@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Table,
   TableHeader,
@@ -27,6 +27,28 @@ const FirewallRulesPage = () => {
 
   const { data, isLoading, error, refetch } =
     useFirewallControllerGetAllFirewallRules();
+
+  // Subscribe to real-time rule change events
+  useEffect(() => {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+    const eventSource = new EventSource(`${apiUrl}/firewall/events`, {
+      withCredentials: true,
+    });
+
+    eventSource.onmessage = (event) => {
+      console.log("Rule changed:", event.data);
+      refetch(); // Refresh data when a rule is changed by cron
+    };
+
+    eventSource.onerror = (error) => {
+      console.error("SSE connection error", error);
+      eventSource.close();
+    };
+
+    return () => {
+      eventSource.close();
+    };
+  }, [refetch]);
 
   const {
     filterValue,

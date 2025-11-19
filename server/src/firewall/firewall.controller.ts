@@ -6,6 +6,8 @@ import {
   UseGuards,
   Body,
   Request,
+  Sse,
+  MessageEvent,
 } from '@nestjs/common';
 import { FirewallService } from './firewall.service';
 import { ApiOperation, ApiTags, ApiResponse, ApiQuery } from '@nestjs/swagger';
@@ -17,6 +19,7 @@ import {
 import { Roles } from 'src/auth/decorators/roles.decorators';
 import { Role } from 'generated/prisma';
 import { RolesGuard } from 'src/guard/roles.guard';
+import { Observable } from 'rxjs';
 
 @Roles(Role.TEACHER, Role.ADMINISTRATOR)
 @UseGuards(RolesGuard)
@@ -74,5 +77,14 @@ export class FirewallController {
     @Request() request,
   ) {
     return this.firewallService.scheduleRuleChange(dto, request);
+  }
+
+  @Sse('events')
+  @ApiOperation({
+    summary: 'Subscribe to firewall rule change events',
+    description: 'Server-Sent Events stream for real-time rule updates',
+  })
+  ruleEvents(): Observable<MessageEvent> {
+    return this.firewallService.getRuleChangeEvents();
   }
 }

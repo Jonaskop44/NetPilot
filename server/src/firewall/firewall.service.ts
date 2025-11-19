@@ -2,17 +2,20 @@ import {
   ConflictException,
   Injectable,
   NotFoundException,
+  MessageEvent,
 } from '@nestjs/common';
 import { OpnsenseClient } from './opnsense.client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ScheduleRuleChangeDto } from './dto/firewall-rule.dto';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { Request } from 'express';
+import { Observable, Subject } from 'rxjs';
 
 @Injectable()
 export class FirewallService {
   private opnsenseClient = new OpnsenseClient();
   private client = this.opnsenseClient.getClient();
+  private ruleChangeSubject = new Subject<MessageEvent>();
 
   constructor(private readonly prisma: PrismaService) {}
 
@@ -173,6 +176,11 @@ export class FirewallService {
             executedAt: new Date(),
           },
         });
+
+        // Emit event for real-time updates
+        this.ruleChangeSubject.next({
+          data: { ruleUuid: change.ruleUuid, executed: true },
+        });
       } catch (error) {
         console.error(
           `[CRON] Failed to execute scheduled change ${change.id}:`,
@@ -180,5 +188,9 @@ export class FirewallService {
         );
       }
     }
+  }
+
+  getRuleChangeEvents(): Observable<MessageEvent> {
+    return this.ruleChangeSubject.asObservable();
   }
 }
