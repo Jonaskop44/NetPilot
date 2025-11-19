@@ -99,8 +99,6 @@ export class FirewallService {
     // 1. Set rule to desired state immediately
     const result = await this.toggleFirewallRule(dto.ruleUuid);
 
-    console.log('[METHOD] Set rule state result:', result);
-
     // 2. Parse revertAt date string
     const revertTime = new Date(dto.revertAt);
     const now = new Date();
@@ -110,8 +108,8 @@ export class FirewallService {
       throw new ConflictException('Revert time must be in the future');
     }
 
-    // 3. Determine the reverse action
-    const reverseAction = request.request === 'enable' ? 'disable' : 'enable';
+    // 3. Determine the reverse action based on the toggle result
+    const reverseAction = result.result === 'Enabled' ? 'disable' : 'enable';
 
     // 4. Schedule the reverse change
     if (userId) {
@@ -131,7 +129,12 @@ export class FirewallService {
   @Cron(CronExpression.EVERY_MINUTE)
   async processScheduledChanges() {
     const now = new Date();
-    console.log(`[CRON] Checking scheduled changes at ${now.toISOString()}`);
+
+    const allScheduled = await this.prisma.scheduledRuleChange.findMany({
+      where: {
+        executed: false,
+      },
+    });
 
     const pendingChanges = await this.prisma.scheduledRuleChange.findMany({
       where: {
@@ -142,13 +145,9 @@ export class FirewallService {
       },
     });
 
-    console.log(`[CRON] Found ${pendingChanges.length} pending changes`);
-
     for (const change of pendingChanges) {
       try {
-        const result = await this.toggleFirewallRule(change.ruleUuid);
-
-        console.log('Set rule state result:', result);
+        await this.toggleFirewallRule(change.ruleUuid);
 
         await this.prisma.scheduledRuleChange.update({
           where: { id: change.id },
@@ -157,8 +156,6 @@ export class FirewallService {
             executedAt: new Date(),
           },
         });
-
-        console.log(`[CRON] Successfully executed change ${change.id}`);
       } catch (error) {
         console.error(
           `[CRON] Failed to execute scheduled change ${change.id}:`,
