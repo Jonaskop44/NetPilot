@@ -1,8 +1,12 @@
 import { useCallback } from "react";
-import { useFirewallControllerToggleFirewallRule } from "@/api/firewall/firewall";
+import {
+  useFirewallControllerScheduleRuleChange,
+  useFirewallControllerToggleFirewallRule,
+} from "@/api/firewall/firewall";
 
 const useFirewallActions = (refetch: () => void) => {
   const toggleMutation = useFirewallControllerToggleFirewallRule();
+  const scheduleMutation = useFirewallControllerScheduleRuleChange();
 
   const handleToggleRule = useCallback(
     async (uuid: string) => {
@@ -16,8 +20,26 @@ const useFirewallActions = (refetch: () => void) => {
     [toggleMutation, refetch]
   );
 
+  const handleScheduleRule = useCallback(
+    async (data: { ruleUuid: string; revertAt: string }) => {
+      try {
+        await scheduleMutation.mutateAsync({
+          data: {
+            ruleUuid: data.ruleUuid,
+            revertAt: data.revertAt,
+          },
+        });
+        refetch();
+      } catch (error) {
+        console.error("Failed to schedule rule change:", error);
+      }
+    },
+    [scheduleMutation, refetch]
+  );
+
   return {
     handleToggleRule,
+    handleScheduleRule,
   };
 };
 

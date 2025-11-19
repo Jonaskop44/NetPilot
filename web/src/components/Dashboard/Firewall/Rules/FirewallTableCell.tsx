@@ -22,12 +22,14 @@ interface FirewallTableCellProps {
   rule: FirewallRuleDto;
   columnKey: React.Key;
   onToggleRule: (uuid: string) => void;
+  onScheduleRule: (uuid: string) => void;
 }
 
 const FirewallTableCell: FC<FirewallTableCellProps> = ({
   rule,
   columnKey,
   onToggleRule,
+  onScheduleRule,
 }) => {
   const cellValue = rule[columnKey as keyof FirewallRuleDto];
 
@@ -142,12 +144,31 @@ const FirewallTableCell: FC<FirewallTableCellProps> = ({
               >
                 {rule.enabled ? "Deaktivieren" : "Aktivieren"}
               </DropdownItem>
+              <DropdownItem
+                key="schedule"
+                startContent={<Icon icon="solar:calendar-add-linear" />}
+                onPress={() => onScheduleRule(rule.uuid)}
+              >
+                Regeländerung planen
+              </DropdownItem>
             </DropdownMenu>
           </Dropdown>
         </div>
       );
     default:
-      return cellValue;
+      if (cellValue == null) return "-";
+      if (typeof cellValue === "object") {
+        try {
+          return (
+            <pre className="whitespace-pre-wrap">
+              {JSON.stringify(cellValue)}
+            </pre>
+          );
+        } catch {
+          return String(cellValue);
+        }
+      }
+      return String(cellValue);
   }
 };
 

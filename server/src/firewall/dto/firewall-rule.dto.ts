@@ -132,6 +132,19 @@ export class FirewallRuleDto {
     required: false,
   })
   categories?: string[];
+
+  @ApiProperty({
+    description: 'Active schedule for this rule',
+    required: false,
+    nullable: true,
+    example: {
+      scheduledFor: '2025-11-19T19:30:00.000Z',
+      executed: false,
+    },
+  })
+  schedule?: {
+    scheduledFor: Date;
+  } | null;
 }
 
 export class FirewallRulesResponseDto {

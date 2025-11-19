@@ -24,6 +24,8 @@ import type {
 import type {
   FirewallControllerToggleFirewallRuleParams,
   FirewallRulesResponseDto,
+  ScheduleRuleChangeDto,
+  ScheduledRuleChangeResponseDto,
 } from "../openapi.schemas";
 
 import { customInstance } from ".././mutator";
@@ -282,6 +284,100 @@ export const useFirewallControllerToggleFirewallRule = <
 > => {
   const mutationOptions =
     getFirewallControllerToggleFirewallRuleMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};
+/**
+ * Immediately enables or disables a firewall rule, and automatically reverts it at the specified time
+ * @summary Toggle a firewall rule temporarily
+ */
+export const firewallControllerScheduleRuleChange = (
+  scheduleRuleChangeDto: ScheduleRuleChangeDto,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal,
+) => {
+  return customInstance<ScheduledRuleChangeResponseDto>(
+    {
+      url: `http://localhost:4000/api/v1/firewall/schedule-rule-change`,
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      data: scheduleRuleChangeDto,
+      signal,
+    },
+    options,
+  );
+};
+
+export const getFirewallControllerScheduleRuleChangeMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof firewallControllerScheduleRuleChange>>,
+    TError,
+    { data: ScheduleRuleChangeDto },
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof firewallControllerScheduleRuleChange>>,
+  TError,
+  { data: ScheduleRuleChangeDto },
+  TContext
+> => {
+  const mutationKey = ["firewallControllerScheduleRuleChange"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof firewallControllerScheduleRuleChange>>,
+    { data: ScheduleRuleChangeDto }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return firewallControllerScheduleRuleChange(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type FirewallControllerScheduleRuleChangeMutationResult = NonNullable<
+  Awaited<ReturnType<typeof firewallControllerScheduleRuleChange>>
+>;
+export type FirewallControllerScheduleRuleChangeMutationBody =
+  ScheduleRuleChangeDto;
+export type FirewallControllerScheduleRuleChangeMutationError = unknown;
+
+/**
+ * @summary Toggle a firewall rule temporarily
+ */
+export const useFirewallControllerScheduleRuleChange = <
+  TError = unknown,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof firewallControllerScheduleRuleChange>>,
+      TError,
+      { data: ScheduleRuleChangeDto },
+      TContext
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof firewallControllerScheduleRuleChange>>,
+  TError,
+  { data: ScheduleRuleChangeDto },
+  TContext
+> => {
+  const mutationOptions =
+    getFirewallControllerScheduleRuleChangeMutationOptions(options);
 
   return useMutation(mutationOptions, queryClient);
 };

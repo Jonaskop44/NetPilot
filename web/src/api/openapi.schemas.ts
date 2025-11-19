@@ -89,6 +89,12 @@ export const FirewallRuleDtoIpprotocol = {
   inet46: "inet46",
 } as const;
 
+/**
+ * Active schedule for this rule
+ * @nullable
+ */
+export type FirewallRuleDtoSchedule = { [key: string]: unknown } | null;
+
 export interface FirewallRuleDto {
   /** Unique identifier for the rule */
   uuid: string;
@@ -128,6 +134,11 @@ export interface FirewallRuleDto {
   sequence?: string;
   /** Categories assigned to this rule */
   categories?: string[];
+  /**
+   * Active schedule for this rule
+   * @nullable
+   */
+  schedule?: FirewallRuleDtoSchedule;
 }
 
 export interface FirewallRulesResponseDto {
@@ -135,6 +146,28 @@ export interface FirewallRulesResponseDto {
   total: number;
   /** List of firewall rules */
   rules: FirewallRuleDto[];
+}
+
+export interface ScheduleRuleChangeDto {
+  /** UUID of the firewall rule */
+  ruleUuid: string;
+  /** Time when the rule should be reverted back (HH:mm format) */
+  revertAt: string;
+}
+
+export interface ScheduledRuleChangeResponseDto {
+  /** ID of the scheduled change */
+  id: number;
+  /** UUID of the firewall rule */
+  ruleUuid: string;
+  /** Action that will be performed (this reverts the immediate change) */
+  action: string;
+  /** When the rule will be reverted */
+  scheduledFor: string;
+  /** Whether the revert has been executed */
+  executed: boolean;
+  /** When the revert was executed */
+  executedAt?: string;
 }
 
 export interface PaginatedUsersResponseDto {

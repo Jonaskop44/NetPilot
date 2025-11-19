@@ -26,6 +26,22 @@ export class FirewallService {
 
     const rulesObject = data.filter.rules.rule;
 
+    // Get all active schedules
+    const activeSchedules = await this.prisma.scheduledRuleChange.findMany({
+      where: {
+        executed: false,
+      },
+      select: {
+        ruleUuid: true,
+        scheduledFor: true,
+      },
+    });
+
+    // Create a map for quick lookup
+    const scheduleMap = new Map(
+      activeSchedules.map((schedule) => [schedule.ruleUuid, schedule]),
+    );
+
     const allRules = Object.entries(rulesObject).map(
       ([uuid, ruleData]: [string, any]) => {
         const extractSelectedOption = (field: any): string | undefined => {
@@ -37,6 +53,8 @@ export class FirewallService {
 
           return selectedEntry ? selectedEntry[0] : undefined;
         };
+
+        const schedule = scheduleMap.get(uuid);
 
         return {
           uuid,
@@ -52,6 +70,11 @@ export class FirewallService {
           destination_port: ruleData.destination_port || undefined,
           description: ruleData.description || undefined,
           log: ruleData.log === '1',
+          schedule: schedule
+            ? {
+                scheduledFor: schedule.scheduledFor,
+              }
+            : null,
         };
       },
     );
@@ -82,12 +105,6 @@ export class FirewallService {
 
     // Apply changes
     await this.client.post('/firewall/filter/apply');
-
-    //Example Response
-    //        {
-    //   "result": "Enabled",
-    //   "changed": true
-    // }
 
     return data;
   }
