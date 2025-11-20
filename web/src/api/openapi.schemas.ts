@@ -203,6 +203,35 @@ export interface UserRoleEditDto {
   role: UserRoleEditDtoRole;
 }
 
+export interface UserStatisticsDto {
+  /** Total number of users */
+  total: number;
+  /** Number of administrator users */
+  administrators: number;
+  /** Number of teacher users */
+  teachers: number;
+  /** Number of student users */
+  students: number;
+}
+
+export interface FirewallStatisticsDto {
+  /** Total number of firewall rules */
+  total: number;
+  /** Number of enabled rules */
+  enabled: number;
+  /** Number of disabled rules */
+  disabled: number;
+  /** Number of scheduled rule changes */
+  scheduled: number;
+}
+
+export interface DashboardStatisticsDto {
+  /** User statistics */
+  users: UserStatisticsDto;
+  /** Firewall statistics */
+  firewall: FirewallStatisticsDto;
+}
+
 export type FirewallControllerToggleFirewallRuleParams = {
   /**
    * Unique identifier of the firewall rule to toggle

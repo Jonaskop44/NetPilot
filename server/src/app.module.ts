@@ -6,6 +6,7 @@ import { UserModule } from './user/user.module';
 import { FirewallModule } from './firewall/firewall.module';
 import { AdminModule } from './admin/admin.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { AnalyticsModule } from './analytics/analytics.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     UserModule,
     FirewallModule,
     AdminModule,
+    AnalyticsModule,
   ],
   controllers: [],
   providers: [],
