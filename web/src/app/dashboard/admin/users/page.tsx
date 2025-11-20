@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { AxiosError } from "axios";
 import {
   Table,
   TableHeader,
@@ -57,8 +58,12 @@ const UsersPage = () => {
           toast.success("Rolle erfolgreich aktualisiert");
           refetch();
         },
-        onError() {
-          toast.error(`Fehler beim Aktualisieren der Rolle`);
+        onError(error) {
+          const errorMessage =
+            error instanceof AxiosError && error.response?.data?.message
+              ? error.response.data.message
+              : "Fehler beim Aktualisieren der Rolle";
+          toast.error(errorMessage);
         },
       }
     );
@@ -72,8 +77,12 @@ const UsersPage = () => {
           toast.success("User erfolgreich gelöscht");
           refetch();
         },
-        onError() {
-          toast.error(`Fehler beim Löschen des Users`);
+        onError(error) {
+          const errorMessage =
+            error instanceof AxiosError && error.response?.data?.message
+              ? error.response.data.message
+              : "Fehler beim Löschen des Users";
+          toast.error(errorMessage);
         },
       }
     );
