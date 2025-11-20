@@ -150,12 +150,6 @@ export class FirewallService {
   async processScheduledChanges() {
     const now = new Date();
 
-    const allScheduled = await this.prisma.scheduledRuleChange.findMany({
-      where: {
-        executed: false,
-      },
-    });
-
     const pendingChanges = await this.prisma.scheduledRuleChange.findMany({
       where: {
         executed: false,
