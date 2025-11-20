@@ -17,9 +17,9 @@ export const ROLE_COLOR_MAP: Record<string, ChipProps["color"]> = {
 };
 
 export const ROLE_ICON_MAP: Record<string, string> = {
-  ADMINISTRATOR: "solar:crown-line-duotone",
-  TEACHER: "solar:meditation-bold",
-  STUDENT: "solar:face-scan-circle-linear",
+  ADMINISTRATOR: "eos-icons:admin",
+  TEACHER: "fa7-solid:chalkboard-teacher",
+  STUDENT: "ph:student-bold",
 };
 
 export const EDIT_ACTIONS = [

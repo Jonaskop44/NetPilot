@@ -18,7 +18,10 @@ import type {
   UseQueryResult,
 } from "@tanstack/react-query";
 
-import type { DashboardStatisticsDto } from "../openapi.schemas";
+import type {
+  ActiveSessionsAnalyticsDto,
+  DashboardStatisticsDto,
+} from "../openapi.schemas";
 
 import { customInstance } from ".././mutator";
 
@@ -173,6 +176,196 @@ export function useAnalyticsControllerGetStatistics<
   queryKey: DataTag<QueryKey, TData, TError>;
 } {
   const queryOptions = getAnalyticsControllerGetStatisticsQueryOptions(options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+/**
+ * Retrieves time series data of active user sessions throughout the current day
+ * @summary Get active sessions analytics
+ */
+export const analyticsControllerGetActiveSessionsAnalytics = (
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal,
+) => {
+  return customInstance<ActiveSessionsAnalyticsDto>(
+    {
+      url: `http://localhost:4000/api/v1/analytics/active-sessions`,
+      method: "GET",
+      signal,
+    },
+    options,
+  );
+};
+
+export const getAnalyticsControllerGetActiveSessionsAnalyticsQueryKey = () => {
+  return [`http://localhost:4000/api/v1/analytics/active-sessions`] as const;
+};
+
+export const getAnalyticsControllerGetActiveSessionsAnalyticsQueryOptions = <
+  TData = Awaited<
+    ReturnType<typeof analyticsControllerGetActiveSessionsAnalytics>
+  >,
+  TError = unknown,
+>(options?: {
+  query?: Partial<
+    UseQueryOptions<
+      Awaited<ReturnType<typeof analyticsControllerGetActiveSessionsAnalytics>>,
+      TError,
+      TData
+    >
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getAnalyticsControllerGetActiveSessionsAnalyticsQueryKey();
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof analyticsControllerGetActiveSessionsAnalytics>>
+  > = ({ signal }) =>
+    analyticsControllerGetActiveSessionsAnalytics(requestOptions, signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof analyticsControllerGetActiveSessionsAnalytics>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type AnalyticsControllerGetActiveSessionsAnalyticsQueryResult =
+  NonNullable<
+    Awaited<ReturnType<typeof analyticsControllerGetActiveSessionsAnalytics>>
+  >;
+export type AnalyticsControllerGetActiveSessionsAnalyticsQueryError = unknown;
+
+export function useAnalyticsControllerGetActiveSessionsAnalytics<
+  TData = Awaited<
+    ReturnType<typeof analyticsControllerGetActiveSessionsAnalytics>
+  >,
+  TError = unknown,
+>(
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<typeof analyticsControllerGetActiveSessionsAnalytics>
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<
+            ReturnType<typeof analyticsControllerGetActiveSessionsAnalytics>
+          >,
+          TError,
+          Awaited<
+            ReturnType<typeof analyticsControllerGetActiveSessionsAnalytics>
+          >
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useAnalyticsControllerGetActiveSessionsAnalytics<
+  TData = Awaited<
+    ReturnType<typeof analyticsControllerGetActiveSessionsAnalytics>
+  >,
+  TError = unknown,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<typeof analyticsControllerGetActiveSessionsAnalytics>
+        >,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<
+            ReturnType<typeof analyticsControllerGetActiveSessionsAnalytics>
+          >,
+          TError,
+          Awaited<
+            ReturnType<typeof analyticsControllerGetActiveSessionsAnalytics>
+          >
+        >,
+        "initialData"
+      >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useAnalyticsControllerGetActiveSessionsAnalytics<
+  TData = Awaited<
+    ReturnType<typeof analyticsControllerGetActiveSessionsAnalytics>
+  >,
+  TError = unknown,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<typeof analyticsControllerGetActiveSessionsAnalytics>
+        >,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Get active sessions analytics
+ */
+
+export function useAnalyticsControllerGetActiveSessionsAnalytics<
+  TData = Awaited<
+    ReturnType<typeof analyticsControllerGetActiveSessionsAnalytics>
+  >,
+  TError = unknown,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<
+          ReturnType<typeof analyticsControllerGetActiveSessionsAnalytics>
+        >,
+        TError,
+        TData
+      >
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions =
+    getAnalyticsControllerGetActiveSessionsAnalyticsQueryOptions(options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<
     TData,

@@ -14,7 +14,7 @@ const StatCard: FC<StatCardProps> = ({
   title,
   value,
   icon,
-  iconColor = "text-primary",
+  iconColor = "primary",
   description,
 }) => {
   return (
@@ -28,7 +28,7 @@ const StatCard: FC<StatCardProps> = ({
               <p className="text-tiny text-default-400">{description}</p>
             )}
           </div>
-          <div className={`p-3 rounded-lg bg-default-100 ${iconColor}`}>
+          <div className={`p-3 rounded-lg bg-default-100 text-${iconColor}`}>
             <Icon icon={icon} width={24} />
           </div>
         </div>

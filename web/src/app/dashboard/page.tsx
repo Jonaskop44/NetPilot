@@ -6,6 +6,8 @@ import StatCard from "@/components/Dashboard/Stats/StatCard";
 import UserStatsCard from "@/components/Dashboard/Stats/UserStatsCard";
 import FirewallStatsCard from "@/components/Dashboard/Stats/FirewallStatsCard";
 import { useAnalyticsControllerGetStatistics } from "@/api/analytics/analytics";
+import TableError from "@/components/Common/TableError";
+import { ROLE_COLOR_MAP, ROLE_ICON_MAP } from "./admin/users/constants";
 
 const DashboardPage = () => {
   const { user } = useAuth();
@@ -20,11 +22,7 @@ const DashboardPage = () => {
   }
 
   if (error || !data) {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <p className="text-danger">Fehler beim Laden der Dashboard-Daten</p>
-      </div>
-    );
+    return <TableError />;
   }
 
   return (
@@ -39,25 +37,25 @@ const DashboardPage = () => {
           title="Gesamt Benutzer"
           value={data.users.total}
           icon="solar:users-group-rounded-bold-duotone"
-          iconColor="text-primary"
+          iconColor="primary"
         />
         <StatCard
           title="Administratoren"
           value={data.users.administrators}
-          icon="solar:crown-line-duotone"
-          iconColor="text-success"
+          icon={ROLE_ICON_MAP.ADMINISTRATOR}
+          iconColor={ROLE_COLOR_MAP.ADMINISTRATOR}
         />
         <StatCard
           title="Lehrer"
           value={data.users.teachers}
-          icon="solar:meditation-bold"
-          iconColor="text-primary"
+          icon={ROLE_ICON_MAP.TEACHER}
+          iconColor={ROLE_COLOR_MAP.TEACHER}
         />
         <StatCard
           title="Schüler"
           value={data.users.students}
-          icon="solar:face-scan-circle-linear"
-          iconColor="text-warning"
+          icon={ROLE_ICON_MAP.STUDENT}
+          iconColor={ROLE_COLOR_MAP.STUDENT}
         />
       </div>
 
