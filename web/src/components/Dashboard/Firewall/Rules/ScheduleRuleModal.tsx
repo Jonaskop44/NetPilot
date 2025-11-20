@@ -9,6 +9,7 @@ import {
   Input,
 } from "@heroui/react";
 import { Icon } from "@iconify/react";
+import { toast } from "sonner";
 
 interface ScheduleRuleModalProps {
   isOpen: boolean;
@@ -40,7 +41,7 @@ const ScheduleRuleModal: FC<ScheduleRuleModalProps> = ({
 
     // If the time is in the past today, schedule for tomorrow
     if (revertDate <= now) {
-      revertDate.setDate(revertDate.getDate() + 1);
+      toast.error("Ihre Uhrzeit befindet sich in der Vergangenheit");
     }
 
     onSchedule({

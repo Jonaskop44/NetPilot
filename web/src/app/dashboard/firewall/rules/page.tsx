@@ -20,6 +20,7 @@ import useFirewallActions from "../../../../hooks/firewall/rules/useFirewallActi
 import FirewallTableTopContent from "../../../../components/Dashboard/Firewall/Rules/FirewallTableTopContent";
 import FirewallTableCell from "../../../../components/Dashboard/Firewall/Rules/FirewallTableCell";
 import ScheduleRuleModal from "../../../../components/Dashboard/Firewall/Rules/ScheduleRuleModal";
+import { API_URL } from "@/lib/constants";
 
 const FirewallRulesPage = () => {
   const [selectedRuleUuid, setSelectedRuleUuid] = useState<string>("");
@@ -30,14 +31,12 @@ const FirewallRulesPage = () => {
 
   // Subscribe to real-time rule change events
   useEffect(() => {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
-    const eventSource = new EventSource(`${apiUrl}/firewall/events`, {
+    const eventSource = new EventSource(`${API_URL}/firewall/events`, {
       withCredentials: true,
     });
 
-    eventSource.onmessage = (event) => {
-      console.log("Rule changed:", event.data);
-      refetch(); // Refresh data when a rule is changed by cron
+    eventSource.onmessage = () => {
+      refetch();
     };
 
     eventSource.onerror = (error) => {

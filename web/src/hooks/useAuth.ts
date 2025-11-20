@@ -2,8 +2,7 @@
 
 import { useAuthControllerGetCurrentUser } from "@/api/auth/auth";
 import { useAuthControllerLogout } from "@/api/auth/auth";
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+import { API_URL } from "@/lib/constants";
 
 const useAuth = () => {
   const {
@@ -26,7 +25,7 @@ const useAuth = () => {
   const isAuthenticated = authData?.isAuthenticated || false;
 
   const login = () => {
-    const loginUrl = `${API_BASE_URL}/auth/microsoft`;
+    const loginUrl = `${API_URL}/auth/microsoft`;
     window.location.href = loginUrl;
   };
 

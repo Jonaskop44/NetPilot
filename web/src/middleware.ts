@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { API_URL } from "./lib/constants";
 
 export default async function middleware(request: NextRequest) {
   const sessionCookie = request.cookies.get("connect.sid");
@@ -11,10 +12,7 @@ export default async function middleware(request: NextRequest) {
 
   if (sessionCookie) {
     try {
-      const apiUrl =
-        process.env.NEXT_PUBLIC_API_URL;
-
-      const response = await fetch(`${apiUrl}/auth/user`, {
+      const response = await fetch(`${API_URL}/auth/user`, {
         method: "GET",
         headers: {
           Cookie: `connect.sid=${sessionCookie.value}`,
