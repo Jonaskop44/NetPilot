@@ -49,15 +49,37 @@ export class AdminService {
     if (userId === user?.id) {
       throw new ConflictException('You cannot change your own role');
     } else if (dbUser?.role === Role.ADMINISTRATOR) {
-      throw new ConflictException(
-        'You cannot change the role of another administrator',
-      );
+      const promotion = await this.prisma.userPromotion.findFirst({
+        where: {
+          userId: userId,
+          promotedById: user?.id,
+          toRole: Role.ADMINISTRATOR,
+        },
+      });
+
+      if (!promotion) {
+        throw new ConflictException(
+          'You cannot change the role of another administrator that you did not promote',
+        );
+      }
     }
 
-    return this.prisma.user.update({
+    const updatedUser = await this.prisma.user.update({
       where: { id: userId },
       data: { role },
     });
+
+    if (role === Role.ADMINISTRATOR) {
+      await this.prisma.userPromotion.create({
+        data: {
+          userId: userId,
+          promotedById: user!.id,
+          toRole: role,
+        },
+      });
+    }
+
+    return updatedUser;
   }
 
   async deleteUser(userId: number, request: Request) {

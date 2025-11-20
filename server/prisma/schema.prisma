@@ -23,6 +23,21 @@ model User {
   createdAt            DateTime              @default(now())
   updatedAt            DateTime              @updatedAt
   scheduledRuleChanges ScheduledRuleChange[]
+  userPromotions       UserPromotion[]       @relation("PromotedUser")
+  performedPromotions  UserPromotion[]       @relation("PromotingAdmin")
+}
+
+model UserPromotion {
+  id           Int      @id @default(autoincrement())
+  userId       Int
+  promotedById Int
+  toRole       Role
+  createdAt    DateTime @default(now())
+
+  user           User @relation("PromotedUser", fields: [userId], references: [id], onDelete: Cascade)
+  promotingAdmin User @relation("PromotingAdmin", fields: [promotedById], references: [id], onDelete: Cascade)
+
+  @@unique([userId, promotedById, toRole])
 }
 
 model ScheduledRuleChange {
