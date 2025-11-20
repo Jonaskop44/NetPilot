@@ -3,6 +3,8 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { default as expressSession } from 'express-session';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import connectPgSimple from 'connect-pg-simple';
+import pg from 'pg';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -13,8 +15,18 @@ async function bootstrap() {
     credentials: true,
   });
 
+  const PgSession = connectPgSimple(expressSession);
+  const pgPool = new pg.Pool({
+    connectionString: process.env.DATABASE_URL,
+  });
+
   app.use(
     expressSession({
+      store: new PgSession({
+        pool: pgPool,
+        tableName: 'Session',
+        createTableIfMissing: false,
+      }),
       secret: process.env.SESSION_SECRET as string,
       resave: false,
       saveUninitialized: false,
