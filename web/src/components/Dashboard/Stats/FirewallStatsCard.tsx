@@ -11,6 +11,8 @@ const FirewallStatsCard: FC<FirewallStatsCardProps> = ({ data }) => {
   const enabledPercentage =
     data.total > 0 ? Math.round((data.enabled / data.total) * 100) : 0;
 
+  const disabledPercentage = 100 - enabledPercentage;
+
   return (
     <Card className="w-full">
       <CardHeader className="flex gap-3">
@@ -54,21 +56,26 @@ const FirewallStatsCard: FC<FirewallStatsCardProps> = ({ data }) => {
             />
             <span className="text-small">Deaktiviert</span>
           </div>
-          <span className="font-semibold text-default-600">
-            {data.disabled}
-          </span>
+          <div className="flex items-center gap-2">
+            <Chip size="sm" color="default" variant="flat">
+              {disabledPercentage}%
+            </Chip>
+            <span className="font-semibold text-default-600">
+              {data.disabled}
+            </span>
+          </div>
         </div>
         {data.scheduled > 0 && (
-          <div className="flex justify-between items-center p-3 rounded-lg bg-warning-50">
+          <div className="flex justify-between items-center p-3 rounded-lg bg-sky-50">
             <div className="flex items-center gap-3">
               <Icon
                 icon="solar:clock-circle-bold"
                 width={20}
-                className="text-warning"
+                className="text-sky-600"
               />
               <span className="text-small">Geplante Änderungen</span>
             </div>
-            <span className="font-semibold text-warning">{data.scheduled}</span>
+            <span className="font-semibold text-sky-600">{data.scheduled}</span>
           </div>
         )}
       </CardBody>

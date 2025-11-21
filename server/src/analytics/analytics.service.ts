@@ -1,10 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Role } from 'generated/prisma';
+import { FirewallService } from 'src/firewall/firewall.service';
 
 @Injectable()
 export class AnalyticsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly firewallService: FirewallService,
+  ) {}
 
   async getStatistics() {
     const [userStats, firewallStats] = await Promise.all([
@@ -47,13 +51,14 @@ export class AnalyticsService {
       },
     });
 
-    // Note: Firewall rules are from OPNsense API, not database
-    // For now, we return 0 for total/enabled/disabled
-    // These will be calculated when firewall data is available
+    const allRules = await this.firewallService.getAllFirewallRules();
+    const enable = allRules.rules.filter((rule) => rule.enabled).length;
+    const disable = allRules.rules.length - enable;
+
     return {
-      total: 0,
-      enabled: 0,
-      disabled: 0,
+      total: allRules.total,
+      enabled: enable,
+      disabled: disable,
       scheduled,
     };
   }

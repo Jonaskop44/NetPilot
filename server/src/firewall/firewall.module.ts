@@ -7,5 +7,6 @@ import { UserModule } from 'src/user/user.module';
   imports: [UserModule],
   controllers: [FirewallController],
   providers: [FirewallService],
+  exports: [FirewallService],
 })
 export class FirewallModule {}
