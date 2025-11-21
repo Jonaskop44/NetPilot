@@ -97,8 +97,16 @@ export class AdminService {
     });
 
     if (role === Role.ADMINISTRATOR) {
-      await this.prisma.userPromotion.create({
-        data: {
+      await this.prisma.userPromotion.upsert({
+        where: {
+          userId_promotedById_toRole: {
+            userId: userId,
+            promotedById: user!.id,
+            toRole: role,
+          },
+        },
+        update: {},
+        create: {
           userId: userId,
           promotedById: user!.id,
           toRole: role,
