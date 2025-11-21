@@ -225,11 +225,20 @@ export interface FirewallStatisticsDto {
   scheduled: number;
 }
 
+export interface HourlySessionDto {
+  /** Timestamp of the hour */
+  time: string;
+  /** Number of sessions created in this hour */
+  count: number;
+}
+
 export interface DashboardStatisticsDto {
   /** User statistics */
   users: UserStatisticsDto;
   /** Firewall statistics */
   firewall: FirewallStatisticsDto;
+  /** Hourly session statistics for today */
+  sessions: HourlySessionDto[];
 }
 
 export type FirewallControllerToggleFirewallRuleParams = {

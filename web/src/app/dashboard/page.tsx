@@ -3,8 +3,8 @@
 import useAuth from "@/hooks/useAuth";
 import { Spinner } from "@heroui/react";
 import StatCard from "@/components/Dashboard/Stats/StatCard";
-import UserStatsCard from "@/components/Dashboard/Stats/UserStatsCard";
 import FirewallStatsCard from "@/components/Dashboard/Stats/FirewallStatsCard";
+import SessionsChartCard from "@/components/Dashboard/Stats/SessionsChartCard";
 import { useAnalyticsControllerGetStatistics } from "@/api/analytics/analytics";
 import TableError from "@/components/Common/TableError";
 import { ROLE_COLOR_MAP, ROLE_ICON_MAP } from "./admin/users/constants";
@@ -60,7 +60,7 @@ const DashboardPage = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <UserStatsCard data={data.users} />
+        <SessionsChartCard data={data.sessions} />
         <FirewallStatsCard data={data.firewall} />
       </div>
     </div>

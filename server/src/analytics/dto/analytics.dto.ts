@@ -52,6 +52,20 @@ export class FirewallStatisticsDto {
   scheduled: number;
 }
 
+export class HourlySessionDto {
+  @ApiProperty({
+    description: 'Timestamp of the hour',
+    example: '2025-11-21T11:00:00.000Z',
+  })
+  time: string;
+
+  @ApiProperty({
+    description: 'Number of sessions created in this hour',
+    example: 4,
+  })
+  count: number;
+}
+
 export class DashboardStatisticsDto {
   @ApiProperty({
     description: 'User statistics',
@@ -64,4 +78,10 @@ export class DashboardStatisticsDto {
     type: FirewallStatisticsDto,
   })
   firewall: FirewallStatisticsDto;
+
+  @ApiProperty({
+    description: 'Hourly session statistics for today',
+    type: [HourlySessionDto],
+  })
+  sessions: HourlySessionDto[];
 }
