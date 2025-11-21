@@ -2,13 +2,14 @@ import { useMemo, useState } from "react";
 import type { SortDescriptor } from "@heroui/react";
 import type { UserDto } from "@/api/openapi.schemas";
 
-const useUserSorting = (users: UserDto[]) => {
+const useUserSorting = (users: UserDto[] | undefined) => {
   const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
     column: "id",
     direction: "ascending",
   });
 
   const sortedUsers = useMemo(() => {
+    if (!users) return [];
     return [...users].sort((a, b) => {
       const first = a[sortDescriptor.column as keyof UserDto];
       const second = b[sortDescriptor.column as keyof UserDto];

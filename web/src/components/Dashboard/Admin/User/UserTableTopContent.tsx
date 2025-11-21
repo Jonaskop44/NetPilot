@@ -32,7 +32,7 @@ const UserTableTopContent: React.FC<UserTableTopContentProps> = ({
         <Input
           isClearable
           className="w-full sm:max-w-[44%]"
-          placeholder="Suche nach Name oder E-Mail"
+          placeholder="Suche nach Benutzername oder E-Mail"
           startContent={<Icon icon="solar:magnifer-linear" />}
           value={filterValue}
           onClear={onClear}

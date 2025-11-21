@@ -6,15 +6,39 @@ import {
 import { Role } from 'generated/prisma';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Request } from 'express';
-import { NotFoundError } from 'rxjs';
+import { PageQueryDto } from './dto/admin.dto';
 
 @Injectable()
 export class AdminService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getAllUsers(page: number) {
+  async getAllUsers(query: PageQueryDto) {
     const LIMIT = 10;
-    const skip = (page - 1) * LIMIT;
+    const skip = (query.page - 1) * LIMIT;
+
+    const whereClause = {
+      AND: [
+        query.filter
+          ? {
+              OR: [
+                {
+                  username: {
+                    contains: query.filter,
+                    mode: 'insensitive' as const,
+                  },
+                },
+                {
+                  email: {
+                    contains: query.filter,
+                    mode: 'insensitive' as const,
+                  },
+                },
+              ],
+            }
+          : {},
+        query.role ? { role: query.role } : {},
+      ],
+    };
 
     const [users, total] = await Promise.all([
       this.prisma.user.findMany({
@@ -23,8 +47,11 @@ export class AdminService {
         orderBy: {
           createdAt: 'desc',
         },
+        where: whereClause,
       }),
-      this.prisma.user.count(),
+      this.prisma.user.count({
+        where: whereClause,
+      }),
     ]);
 
     const totalPages = Math.ceil(total / LIMIT);
@@ -32,7 +59,7 @@ export class AdminService {
     return {
       users,
       total,
-      page,
+      page: query.page,
       totalPages,
     };
   }

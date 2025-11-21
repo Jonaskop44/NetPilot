@@ -35,7 +35,7 @@ export class AdminController {
     type: PaginatedUsersResponseDto,
   })
   async getAllUsers(@Query() query: PageQueryDto) {
-    return this.adminService.getAllUsers(query.page);
+    return this.adminService.getAllUsers(query);
   }
 
   @Patch('user/role/:id')

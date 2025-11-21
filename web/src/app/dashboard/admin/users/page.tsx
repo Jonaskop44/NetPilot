@@ -17,8 +17,8 @@ import {
   useAdminControllerGetAllUsers,
 } from "@/api/admin/admin";
 import type { UserDtoRole } from "@/api/openapi.schemas";
+import type { Selection } from "@heroui/react";
 import { COLUMNS } from "./constants";
-import useUserFilters from "../../../../hooks/admin/user/useUserFilters";
 import useUserSorting from "../../../../hooks/admin/user/useUserSorting";
 import UserTableTopContent from "../../../../components/Dashboard/Admin/User/UserTableTopContent";
 import UserTableBottomContent from "../../../../components/Dashboard/Admin/User/UserTableBottomContent";
@@ -28,24 +28,40 @@ import { toast } from "sonner";
 
 const UsersPage = () => {
   const [page, setPage] = useState(1);
+  const [filterValue, setFilterValue] = useState("");
+  const [roleFilter, setRoleFilter] = useState<Selection>("all");
+
+  const selectedRole =
+    roleFilter !== "all" && roleFilter.size === 1
+      ? (Array.from(roleFilter)[0] as UserDtoRole)
+      : undefined;
 
   const { data, isLoading, error, refetch } = useAdminControllerGetAllUsers({
     page,
+    filter: filterValue || undefined,
+    role: selectedRole,
   });
   const { mutate: editUserRole } = useAdminControllerEditUserRole();
   const { mutate: deleteUser } = useAdminControllerDeleteUser();
 
-  const {
-    filterValue,
-    roleFilter,
-    filteredUsers,
-    setRoleFilter,
-    onClear,
-    onSearchChange,
-  } = useUserFilters(data?.users);
+  const { sortDescriptor, setSortDescriptor, sortedUsers } = useUserSorting(
+    data?.users
+  );
 
-  const { sortDescriptor, setSortDescriptor, sortedUsers } =
-    useUserSorting(filteredUsers);
+  const onClear = () => {
+    setFilterValue("");
+    setPage(1);
+  };
+
+  const onSearchChange = (value?: string) => {
+    setFilterValue(value || "");
+    setPage(1);
+  };
+
+  const onRoleFilterChange = (keys: Selection) => {
+    setRoleFilter(keys);
+    setPage(1);
+  };
 
   const handleEditRole = (userId: number, role: UserDtoRole) => {
     editUserRole(
@@ -95,7 +111,10 @@ const UsersPage = () => {
   return (
     <div className="flex flex-col h-full p-6 overflow-hidden">
       <div className="shrink-0 mb-4">
-        <h1 className="text-3xl font-bold mb-2">Users</h1>
+        <h1 className="text-3xl font-bold mb-2">Benutzer</h1>
+        <p className="text-gray-600">
+          Es gibt {data?.total || "..."} Benutzer zu verwalten
+        </p>
       </div>
       <div className="flex-1 min-h-0">
         <Table
@@ -107,7 +126,7 @@ const UsersPage = () => {
               roleFilter={roleFilter}
               onClear={onClear}
               onSearchChange={onSearchChange}
-              onRoleFilterChange={setRoleFilter}
+              onRoleFilterChange={onRoleFilterChange}
             />
           }
           topContentPlacement="outside"

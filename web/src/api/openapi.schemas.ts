@@ -232,20 +232,6 @@ export interface DashboardStatisticsDto {
   firewall: FirewallStatisticsDto;
 }
 
-export interface SessionDataPointDto {
-  /** Timestamp in milliseconds (Unix epoch) */
-  timestamp: number;
-  /** Number of active users at this timestamp */
-  activeUsers: number;
-}
-
-export interface ActiveSessionsAnalyticsDto {
-  /** Current number of active sessions */
-  currentActive: number;
-  /** Time series data points for the chart */
-  timeSeries: SessionDataPointDto[];
-}
-
 export type FirewallControllerToggleFirewallRuleParams = {
   /**
    * Unique identifier of the firewall rule to toggle
@@ -258,4 +244,12 @@ export type AdminControllerGetAllUsersParams = {
    * Page number
    */
   page: number;
+  /**
+   * Filter for users by username or email
+   */
+  filter?: string;
+  /**
+   * Filter for users by role
+   */
+  role?: string;
 };

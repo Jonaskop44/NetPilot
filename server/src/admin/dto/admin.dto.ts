@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsNumber, Min, IsEnum } from 'class-validator';
+import { IsNumber, Min, IsEnum, IsString, IsOptional } from 'class-validator';
 import { Role } from 'generated/prisma';
 import { UserDto } from 'src/user/dto/user.dto';
 
@@ -10,6 +10,24 @@ export class PageQueryDto {
   @IsNumber()
   @Min(1, { message: 'Page must be at least 1' })
   page: number;
+
+  @ApiProperty({
+    example: 'user1',
+    description: 'Filter for users by username or email',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  filter?: string;
+
+  @ApiProperty({
+    example: Role.TEACHER,
+    description: 'Filter for users by role',
+    required: false,
+  })
+  @IsOptional()
+  @IsEnum(Role)
+  role?: Role;
 }
 
 export class UserRoleEditDto {
