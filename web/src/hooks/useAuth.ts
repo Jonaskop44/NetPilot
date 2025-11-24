@@ -25,7 +25,7 @@ const useAuth = () => {
   const isAuthenticated = authData?.isAuthenticated || false;
 
   const login = () => {
-    const loginUrl = `${API_URL}/auth/microsoft`;
+    const loginUrl = `${API_URL}/api/v1/auth/microsoft`;
     window.location.href = loginUrl;
   };
 

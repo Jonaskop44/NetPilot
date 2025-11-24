@@ -33,17 +33,13 @@ export const analyticsControllerGetStatistics = (
   signal?: AbortSignal,
 ) => {
   return customInstance<DashboardStatisticsDto>(
-    {
-      url: `http://localhost:4000/api/v1/analytics/statistics`,
-      method: "GET",
-      signal,
-    },
+    { url: `/api/v1/analytics/statistics`, method: "GET", signal },
     options,
   );
 };
 
 export const getAnalyticsControllerGetStatisticsQueryKey = () => {
-  return [`http://localhost:4000/api/v1/analytics/statistics`] as const;
+  return [`/api/v1/analytics/statistics`] as const;
 };
 
 export const getAnalyticsControllerGetStatisticsQueryOptions = <

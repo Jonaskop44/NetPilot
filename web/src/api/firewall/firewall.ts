@@ -41,17 +41,13 @@ export const firewallControllerGetAllFirewallRules = (
   signal?: AbortSignal,
 ) => {
   return customInstance<FirewallRulesResponseDto>(
-    {
-      url: `http://localhost:4000/api/v1/firewall/rules`,
-      method: "GET",
-      signal,
-    },
+    { url: `/api/v1/firewall/rules`, method: "GET", signal },
     options,
   );
 };
 
 export const getFirewallControllerGetAllFirewallRulesQueryKey = () => {
-  return [`http://localhost:4000/api/v1/firewall/rules`] as const;
+  return [`/api/v1/firewall/rules`] as const;
 };
 
 export const getFirewallControllerGetAllFirewallRulesQueryOptions = <
@@ -205,12 +201,7 @@ export const firewallControllerToggleFirewallRule = (
   signal?: AbortSignal,
 ) => {
   return customInstance<void>(
-    {
-      url: `http://localhost:4000/api/v1/firewall/toggle-rule`,
-      method: "POST",
-      params,
-      signal,
-    },
+    { url: `/api/v1/firewall/toggle-rule`, method: "POST", params, signal },
     options,
   );
 };
@@ -298,7 +289,7 @@ export const firewallControllerScheduleRuleChange = (
 ) => {
   return customInstance<ScheduledRuleChangeResponseDto>(
     {
-      url: `http://localhost:4000/api/v1/firewall/schedule-rule-change`,
+      url: `/api/v1/firewall/schedule-rule-change`,
       method: "POST",
       headers: { "Content-Type": "application/json" },
       data: scheduleRuleChangeDto,
@@ -390,17 +381,13 @@ export const firewallControllerRuleEvents = (
   signal?: AbortSignal,
 ) => {
   return customInstance<void>(
-    {
-      url: `http://localhost:4000/api/v1/firewall/events`,
-      method: "GET",
-      signal,
-    },
+    { url: `/api/v1/firewall/events`, method: "GET", signal },
     options,
   );
 };
 
 export const getFirewallControllerRuleEventsQueryKey = () => {
-  return [`http://localhost:4000/api/v1/firewall/events`] as const;
+  return [`/api/v1/firewall/events`] as const;
 };
 
 export const getFirewallControllerRuleEventsQueryOptions = <

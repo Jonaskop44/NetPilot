@@ -39,13 +39,13 @@ export const authControllerGetCurrentUser = (
   signal?: AbortSignal,
 ) => {
   return customInstance<AuthResponseDto>(
-    { url: `http://localhost:4000/api/v1/auth/user`, method: "GET", signal },
+    { url: `/api/v1/auth/user`, method: "GET", signal },
     options,
   );
 };
 
 export const getAuthControllerGetCurrentUserQueryKey = () => {
-  return [`http://localhost:4000/api/v1/auth/user`] as const;
+  return [`/api/v1/auth/user`] as const;
 };
 
 export const getAuthControllerGetCurrentUserQueryOptions = <
@@ -194,7 +194,7 @@ export const authControllerLogout = (
   signal?: AbortSignal,
 ) => {
   return customInstance<LogoutResponseDto>(
-    { url: `http://localhost:4000/api/v1/auth/logout`, method: "POST", signal },
+    { url: `/api/v1/auth/logout`, method: "POST", signal },
     options,
   );
 };

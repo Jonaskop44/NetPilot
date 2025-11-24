@@ -40,12 +40,7 @@ export const adminControllerGetAllUsers = (
   signal?: AbortSignal,
 ) => {
   return customInstance<PaginatedUsersResponseDto>(
-    {
-      url: `http://localhost:4000/api/v1/admin/users`,
-      method: "GET",
-      params,
-      signal,
-    },
+    { url: `/api/v1/admin/users`, method: "GET", params, signal },
     options,
   );
 };
@@ -53,10 +48,7 @@ export const adminControllerGetAllUsers = (
 export const getAdminControllerGetAllUsersQueryKey = (
   params?: AdminControllerGetAllUsersParams,
 ) => {
-  return [
-    `http://localhost:4000/api/v1/admin/users`,
-    ...(params ? [params] : []),
-  ] as const;
+  return [`/api/v1/admin/users`, ...(params ? [params] : [])] as const;
 };
 
 export const getAdminControllerGetAllUsersQueryOptions = <
@@ -218,7 +210,7 @@ export const adminControllerEditUserRole = (
 ) => {
   return customInstance<void>(
     {
-      url: `http://localhost:4000/api/v1/admin/user/role/${id}`,
+      url: `/api/v1/admin/user/role/${id}`,
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       data: userRoleEditDto,
@@ -307,7 +299,7 @@ export const adminControllerDeleteUser = (
   options?: SecondParameter<typeof customInstance>,
 ) => {
   return customInstance<void>(
-    { url: `http://localhost:4000/api/v1/admin/user/${id}`, method: "DELETE" },
+    { url: `/api/v1/admin/user/${id}`, method: "DELETE" },
     options,
   );
 };

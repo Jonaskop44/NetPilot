@@ -31,10 +31,10 @@ async function bootstrap() {
       resave: false,
       saveUninitialized: false,
       cookie: {
-        secure: process.env.NODE_ENV === 'production',
+        secure: false, // Set to true only when using HTTPS
         httpOnly: true,
         maxAge: 1000 * 60 * 60 * 24,
-        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        sameSite: 'lax',
       },
     }),
   );

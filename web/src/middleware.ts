@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { API_URL } from "./lib/constants";
+import {
+  API_URL_DEVELOPMENT,
+  API_URL_PRODUCTION,
+  isProduction,
+} from "./lib/constants";
 
 export default async function middleware(request: NextRequest) {
   const sessionCookie = request.cookies.get("connect.sid");
@@ -12,13 +16,18 @@ export default async function middleware(request: NextRequest) {
 
   if (sessionCookie) {
     try {
-      const response = await fetch(`${API_URL}/auth/user`, {
-        method: "GET",
-        headers: {
-          Cookie: `connect.sid=${sessionCookie.value}`,
-        },
-        credentials: "include",
-      });
+      const response = await fetch(
+        isProduction
+          ? `${API_URL_PRODUCTION}/api/v1/auth/user`
+          : `${API_URL_DEVELOPMENT}/api/v1/auth/user`,
+        {
+          method: "GET",
+          headers: {
+            Cookie: `connect.sid=${sessionCookie.value}`,
+          },
+          credentials: "include",
+        }
+      );
 
       if (response.ok) {
         const data = await response.json();

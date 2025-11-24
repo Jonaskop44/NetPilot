@@ -31,7 +31,7 @@ const FirewallRulesPage = () => {
 
   // Subscribe to real-time rule change events
   useEffect(() => {
-    const eventSource = new EventSource(`${API_URL}/firewall/events`, {
+    const eventSource = new EventSource(`${API_URL}/api/v1/firewall/events`, {
       withCredentials: true,
     });
 
