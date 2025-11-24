@@ -45,7 +45,7 @@ export class AdminService {
         take: LIMIT,
         skip: skip,
         orderBy: {
-          createdAt: 'desc',
+          id: 'asc',
         },
         where: whereClause,
       }),
