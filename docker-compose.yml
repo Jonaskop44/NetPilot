@@ -1,15 +1,53 @@
 services:
+  netpilot-web:
+    container_name: netpilot-web
+    build:
+      context: web/
+      dockerfile: Dockerfile
+      target: prod
+    restart: unless-stopped
+    networks:
+      - proxy
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./web/.env.production.local
+    depends_on:
+      - netpilot-server
+
+  netpilot-server:
+    container_name: netpilot-server
+    build:
+      context: server/
+      dockerfile: Dockerfile
+      target: prod
+    restart: unless-stopped
+    networks:
+      - proxy
+    env_file:
+      - ./server/.env.production.local
+    ports:
+      - "4000:4000"
+    depends_on:
+      - netpilot-db
   netpilot-db:
     image: postgres:latest
     container_name: netpilot-db
     restart: unless-stopped
     env_file:
-      - ./server/.env
+      - ./server/.env.production.local
     ports:
       - "5432:5432"
     volumes:
       - netpilot-db-data:/var/lib/postgresql/data
+    networks:
+      - proxy
 
 volumes:
   netpilot-db-data:
     driver: local
+
+networks:
+  proxy:
+    external: false
+    name: proxy
