@@ -1,22 +1,59 @@
 "use client";
 
 import useAuth from "@/hooks/useAuth";
-import { Spinner } from "@heroui/react";
+import { Spinner, Button, Card, CardBody } from "@heroui/react";
 import StatCard from "@/components/Dashboard/Stats/StatCard";
 import FirewallStatsCard from "@/components/Dashboard/Stats/FirewallStatsCard";
 import SessionsChartCard from "@/components/Dashboard/Stats/SessionsChartCard";
 import { useAnalyticsControllerGetStatistics } from "@/api/analytics/analytics";
 import TableError from "@/components/Common/TableError";
 import { ROLE_COLOR_MAP, ROLE_ICON_MAP } from "./admin/users/constants";
+import { UserDtoRole } from "@/api/openapi.schemas";
+import { Icon } from "@iconify/react";
 
 const DashboardPage = () => {
-  const { user } = useAuth();
-  const { data, isLoading, error } = useAnalyticsControllerGetStatistics();
+  const { user, logout } = useAuth();
+  const { data, isLoading, error } = useAnalyticsControllerGetStatistics({
+    query: {
+      enabled: user?.role !== UserDtoRole.STUDENT,
+    },
+  });
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-full">
         <Spinner label="Lade Dashboard..." />
+      </div>
+    );
+  }
+
+  // Wenn der Benutzer ein Student ist, zeige Zugriffsverweigerung
+  if (user?.role === UserDtoRole.STUDENT) {
+    return (
+      <div className="flex items-center justify-center h-full p-6">
+        <Card className="max-w-md">
+          <CardBody className="flex flex-col items-center gap-4 p-8">
+            <Icon
+              icon="solar:shield-warning-bold-duotone"
+              className="text-warning"
+              width={80}
+            />
+            <h2 className="text-2xl font-bold text-center">Kein Zugriff</h2>
+            <p className="text-center text-default-500">
+              Sie haben als Schüler keinen Zugriff auf das Dashboard. Bitte
+              melden Sie sich ab oder kontaktieren Sie einen Administrator.
+            </p>
+            <Button
+              color="primary"
+              startContent={
+                <Icon icon="solar:logout-2-bold-duotone" width={20} />
+              }
+              onPress={logout}
+            >
+              Abmelden
+            </Button>
+          </CardBody>
+        </Card>
       </div>
     );
   }

@@ -5,6 +5,7 @@ import {
   API_URL_PRODUCTION,
   isProduction,
 } from "./lib/constants";
+import { AuthResponseDto } from "./api/openapi.schemas";
 
 export default async function middleware(request: NextRequest) {
   const sessionCookie = request.cookies.get("connect.sid");
@@ -30,7 +31,7 @@ export default async function middleware(request: NextRequest) {
       );
 
       if (response.ok) {
-        const data = await response.json();
+        const data: AuthResponseDto = await response.json();
         isAuthenticated = data.isAuthenticated || false;
       }
     } catch (error) {
