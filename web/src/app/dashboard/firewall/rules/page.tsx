@@ -104,7 +104,6 @@ const FirewallRulesPage = () => {
                 onSearchChange={onSearchChange}
                 onActionFilterChange={setActionFilter}
                 onDirectionFilterChange={setDirectionFilter}
-                onAddRule={() => {}}
               />
             }
             topContentPlacement="outside"
