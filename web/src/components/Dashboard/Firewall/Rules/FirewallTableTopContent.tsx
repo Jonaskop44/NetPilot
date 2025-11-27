@@ -7,23 +7,31 @@ import {
   DropdownMenu,
   DropdownItem,
   Selection,
+  Select,
+  SelectItem,
 } from "@heroui/react";
 import { Icon } from "@iconify/react";
 
 interface FirewallTableTopContentProps {
   filterValue: string;
   actionFilter: Selection;
+  interfaceFilter: Selection;
+  availableInterfaces: string[];
   onClear: () => void;
   onSearchChange: (value?: string) => void;
   onActionFilterChange: (keys: Selection) => void;
+  onInterfaceFilterChange: (keys: Selection) => void;
 }
 
 const FirewallTableTopContent: FC<FirewallTableTopContentProps> = ({
   filterValue,
   actionFilter,
+  interfaceFilter,
+  availableInterfaces,
   onClear,
   onSearchChange,
   onActionFilterChange,
+  onInterfaceFilterChange,
 }) => {
   return (
     <div className="flex flex-col gap-4">
@@ -37,9 +45,9 @@ const FirewallTableTopContent: FC<FirewallTableTopContentProps> = ({
           onClear={onClear}
           onValueChange={onSearchChange}
         />
-        <div className="flex gap-3">
+        <div className="flex gap-5">
           <Dropdown>
-            <DropdownTrigger>
+            <DropdownTrigger className="h-[56px]">
               <Button
                 endContent={<Icon icon="solar:alt-arrow-down-linear" />}
                 variant="flat"
@@ -60,6 +68,16 @@ const FirewallTableTopContent: FC<FirewallTableTopContentProps> = ({
               <DropdownItem key="Reject">Reject</DropdownItem>
             </DropdownMenu>
           </Dropdown>
+          <Select
+            label="Raum auswählen"
+            className="w-sm"
+            selectionMode="multiple"
+            onSelectionChange={onInterfaceFilterChange}
+          >
+            {availableInterfaces.map((iface) => (
+              <SelectItem key={iface}>{iface}</SelectItem>
+            ))}
+          </Select>
         </div>
       </div>
     </div>

@@ -25,7 +25,6 @@ import { API_URL } from "@/lib/constants";
 const FirewallRulesPage = () => {
   const [selectedRuleUuid, setSelectedRuleUuid] = useState<string>("");
   const { isOpen, onOpen, onClose } = useDisclosure();
-
   const { data, isLoading, error, refetch } =
     useFirewallControllerGetAllFirewallRules();
 
@@ -52,8 +51,11 @@ const FirewallRulesPage = () => {
   const {
     filterValue,
     actionFilter,
+    interfaceFilter,
+    availableInterfaces,
     filteredRules,
     setActionFilter,
+    setInterfaceFilter,
     onClear,
     onSearchChange,
   } = useFirewallFilters(data?.rules);
@@ -97,9 +99,12 @@ const FirewallRulesPage = () => {
               <FirewallTableTopContent
                 filterValue={filterValue}
                 actionFilter={actionFilter}
+                interfaceFilter={interfaceFilter}
+                availableInterfaces={availableInterfaces}
                 onClear={onClear}
                 onSearchChange={onSearchChange}
                 onActionFilterChange={setActionFilter}
+                onInterfaceFilterChange={setInterfaceFilter}
               />
             }
             topContentPlacement="outside"
