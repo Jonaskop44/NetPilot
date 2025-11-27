@@ -4,6 +4,7 @@ export const COLUMNS = [
   { name: "STATUS", uid: "enabled", sortable: true },
   { name: "AKTION", uid: "action", sortable: true },
   { name: "RAUM", uid: "interface" },
+  { name: "UNTERRICHTSFACH", uid: "categories" },
   { name: "BESCHREIBUNG", uid: "description" },
   { name: "AKTIONEN", uid: "actions" },
 ];

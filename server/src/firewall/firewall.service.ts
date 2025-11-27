@@ -57,6 +57,14 @@ export class FirewallService {
           return selectedEntry ? (selectedEntry[1] as any).value : undefined;
         };
 
+        const extractSelectedCategories = (field: any): string[] => {
+          if (!field || typeof field !== 'object') return [];
+
+          return Object.entries(field)
+            .filter(([_, value]: [string, any]) => value.selected === 1)
+            .map(([_, value]: [string, any]) => value.value);
+        };
+
         const schedule = scheduleMap.get(uuid);
 
         return {
@@ -65,6 +73,7 @@ export class FirewallService {
           action: extractSelectedOption(ruleData.action),
           interface: extractSelectedOption(ruleData.interface),
           description: ruleData.description || undefined,
+          categories: extractSelectedCategories(ruleData.categories),
           schedule: schedule
             ? {
                 scheduledFor: schedule.scheduledFor,

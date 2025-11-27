@@ -75,6 +75,20 @@ const FirewallTableCell: FC<FirewallTableCellProps> = ({
           {rule.interface || "-"}
         </Chip>
       );
+    case "categories":
+      return (
+        <div className="flex gap-1 flex-wrap">
+          {rule.categories && rule.categories.length > 0 ? (
+            rule.categories.map((category, index) => (
+              <Chip key={index} variant="flat" size="sm" color="primary">
+                {category}
+              </Chip>
+            ))
+          ) : (
+            <span className="text-default-400">-</span>
+          )}
+        </div>
+      );
     case "description":
       return (
         <div className="max-w-xs truncate" title={rule.description}>

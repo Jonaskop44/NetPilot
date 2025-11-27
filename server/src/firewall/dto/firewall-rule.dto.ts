@@ -44,6 +44,14 @@ export class FirewallRuleDto {
   description?: string;
 
   @ApiProperty({
+    description: 'Categories assigned to this rule',
+    example: ['Deutsch', 'Mathe'],
+    required: false,
+    type: [String],
+  })
+  categories?: string[];
+
+  @ApiProperty({
     description: 'Active schedule for this rule',
     required: false,
     nullable: true,

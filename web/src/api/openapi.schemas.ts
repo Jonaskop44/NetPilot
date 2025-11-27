@@ -86,6 +86,8 @@ export interface FirewallRuleDto {
   interface?: string;
   /** Rule description */
   description?: string;
+  /** Categories assigned to this rule */
+  categories?: string[];
   /**
    * Active schedule for this rule
    * @nullable

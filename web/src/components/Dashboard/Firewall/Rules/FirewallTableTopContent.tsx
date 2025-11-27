@@ -15,23 +15,25 @@ import { Icon } from "@iconify/react";
 interface FirewallTableTopContentProps {
   filterValue: string;
   actionFilter: Selection;
-  interfaceFilter: Selection;
   availableInterfaces: string[];
+  availableCategories: string[];
   onClear: () => void;
   onSearchChange: (value?: string) => void;
   onActionFilterChange: (keys: Selection) => void;
   onInterfaceFilterChange: (keys: Selection) => void;
+  onCategoryFilterChange: (keys: Selection) => void;
 }
 
 const FirewallTableTopContent: FC<FirewallTableTopContentProps> = ({
   filterValue,
   actionFilter,
-  interfaceFilter,
   availableInterfaces,
+  availableCategories,
   onClear,
   onSearchChange,
   onActionFilterChange,
   onInterfaceFilterChange,
+  onCategoryFilterChange,
 }) => {
   return (
     <div className="flex flex-col gap-4">
@@ -69,13 +71,25 @@ const FirewallTableTopContent: FC<FirewallTableTopContentProps> = ({
             </DropdownMenu>
           </Dropdown>
           <Select
+            isClearable
             label="Raum auswählen"
-            className="w-sm"
+            className="w-[300px]"
             selectionMode="multiple"
             onSelectionChange={onInterfaceFilterChange}
           >
             {availableInterfaces.map((iface) => (
               <SelectItem key={iface}>{iface}</SelectItem>
+            ))}
+          </Select>
+          <Select
+            isClearable
+            label="Unterrichtsfach auswählen"
+            className="w-[300px]"
+            selectionMode="multiple"
+            onSelectionChange={onCategoryFilterChange}
+          >
+            {availableCategories.map((category) => (
+              <SelectItem key={category}>{category}</SelectItem>
             ))}
           </Select>
         </div>

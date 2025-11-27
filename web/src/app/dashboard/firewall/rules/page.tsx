@@ -51,11 +51,12 @@ const FirewallRulesPage = () => {
   const {
     filterValue,
     actionFilter,
-    interfaceFilter,
     availableInterfaces,
+    availableCategories,
     filteredRules,
     setActionFilter,
     setInterfaceFilter,
+    setCategoryFilter,
     onClear,
     onSearchChange,
   } = useFirewallFilters(data?.rules);
@@ -99,12 +100,13 @@ const FirewallRulesPage = () => {
               <FirewallTableTopContent
                 filterValue={filterValue}
                 actionFilter={actionFilter}
-                interfaceFilter={interfaceFilter}
                 availableInterfaces={availableInterfaces}
+                availableCategories={availableCategories}
                 onClear={onClear}
                 onSearchChange={onSearchChange}
                 onActionFilterChange={setActionFilter}
                 onInterfaceFilterChange={setInterfaceFilter}
+                onCategoryFilterChange={setCategoryFilter}
               />
             }
             topContentPlacement="outside"
