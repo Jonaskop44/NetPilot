@@ -6,7 +6,10 @@ import {
 } from '@nestjs/common';
 import { OpnsenseClient } from './opnsense.client';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { ScheduleRuleChangeDto } from './dto/firewall-rule.dto';
+import {
+  BulkScheduleRulesDto,
+  ScheduleRuleChangeDto,
+} from './dto/firewall-rule.dto';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { Request } from 'express';
 import { Observable, Subject } from 'rxjs';
@@ -145,6 +148,44 @@ export class FirewallService {
 
       return scheduledChange;
     }
+  }
+
+  async bulkToggleRules(ruleUuids: string[]) {
+    const results: Array<{
+      uuid: string;
+      success: boolean;
+      result: any;
+    }> = [];
+    for (const uuid of ruleUuids) {
+      try {
+        const result = await this.toggleFirewallRule(uuid);
+        results.push({ uuid, success: true, result });
+      } catch (error) {
+        results.push({ uuid, success: false, result: error.message });
+      }
+    }
+    return { results };
+  }
+
+  async bulkScheduleRuleChanges(dto: BulkScheduleRulesDto, request: Request) {
+    const results: Array<{
+      uuid: string;
+      success: boolean;
+      result: any;
+    }> = [];
+    for (const uuid of dto.ruleUuids) {
+      try {
+        const result = await this.scheduleRuleChange(
+          { ruleUuid: uuid, revertAt: dto.revertAt },
+          request,
+        );
+
+        results.push({ uuid, success: true, result });
+      } catch (error) {
+        results.push({ uuid, success: false, result: error.message });
+      }
+    }
+    return { results };
   }
 
   @Cron(CronExpression.EVERY_MINUTE)

@@ -107,6 +107,43 @@ export class ScheduleRuleChangeDto {
   revertAt: string;
 }
 
+export class BulkScheduleRulesDto {
+  @ApiProperty({
+    description: 'Array of firewall rule UUIDs to schedule',
+    example: [
+      'e855ff5f-47b7-4251-91e0-234b35da7853',
+      'a123b456-c789-0def-1234-567890abcdef',
+    ],
+    type: [String],
+  })
+  @IsString({ each: true })
+  @IsNotEmpty()
+  ruleUuids: string[];
+
+  @ApiProperty({
+    description: 'Time when the rule should be reverted back (HH:mm format)',
+    example: '18:00',
+  })
+  @IsString()
+  @IsNotEmpty()
+  @IsDateString()
+  revertAt: string;
+}
+
+export class BulkToggleRulesDto {
+  @ApiProperty({
+    description: 'Array of firewall rule UUIDs to toggle',
+    example: [
+      'e855ff5f-47b7-4251-91e0-234b35da7853',
+      'a123b456-c789-0def-1234-567890abcdef',
+    ],
+    type: [String],
+  })
+  @IsString({ each: true })
+  @IsNotEmpty()
+  ruleUuids: string[];
+}
+
 export class ScheduledRuleChangeResponseDto {
   @ApiProperty({
     description: 'ID of the scheduled change',

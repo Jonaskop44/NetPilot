@@ -15,6 +15,8 @@ import {
   FirewallRulesResponseDto,
   ScheduleRuleChangeDto,
   ScheduledRuleChangeResponseDto,
+  BulkToggleRulesDto,
+  BulkScheduleRulesDto,
 } from './dto/firewall-rule.dto';
 import { Roles } from 'src/auth/decorators/roles.decorators';
 import { Role } from 'generated/prisma';
@@ -77,6 +79,36 @@ export class FirewallController {
     @Request() request,
   ) {
     return this.firewallService.scheduleRuleChange(dto, request);
+  }
+
+  @Post('bulk-toggle')
+  @ApiOperation({
+    summary: 'Toggle multiple firewall rules',
+    description: 'Enables or disables multiple firewall rules by their UUIDs',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Successfully toggled firewall rules',
+  })
+  async bulkToggleRules(@Body() dto: BulkToggleRulesDto) {
+    return this.firewallService.bulkToggleRules(dto.ruleUuids);
+  }
+
+  @Post('bulk-schedule')
+  @ApiOperation({
+    summary: 'Schedule multiple firewall rules to change',
+    description:
+      'Immediately toggles multiple firewall rules and schedules them to revert at a specific time',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Successfully scheduled multiple rules',
+  })
+  async bulkScheduleRuleChanges(
+    @Body() dto: BulkScheduleRulesDto,
+    @Request() request,
+  ) {
+    return this.firewallService.bulkScheduleRuleChanges(dto, request);
   }
 
   @Sse('events')
