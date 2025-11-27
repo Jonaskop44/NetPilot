@@ -54,7 +54,7 @@ export class FirewallService {
             ([_, value]: [string, any]) => value.selected === 1,
           );
 
-          return selectedEntry ? selectedEntry[0] : undefined;
+          return selectedEntry ? (selectedEntry[1] as any).value : undefined;
         };
 
         const schedule = scheduleMap.get(uuid);
