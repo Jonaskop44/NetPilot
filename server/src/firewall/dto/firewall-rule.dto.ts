@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDateString, IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import { IsDateString, IsNotEmpty, IsString } from 'class-validator';
 
 export class RuleScheduleDto {
   @ApiProperty({
@@ -24,25 +24,10 @@ export class FirewallRuleDto {
 
   @ApiProperty({
     description: 'Rule action (pass/block/reject)',
-    example: 'pass',
-    enum: ['pass', 'block', 'reject'],
+    example: 'Pass',
+    enum: ['Pass', 'Block', 'Reject'],
   })
   action: string;
-
-  @ApiProperty({
-    description: 'Rule direction (in/out)',
-    example: 'in',
-    enum: ['in', 'out'],
-  })
-  direction: string;
-
-  @ApiProperty({
-    description:
-      'IP protocol version (inet=IPv4, inet6=IPv6, inet46=IPv4+IPv6)',
-    example: 'inet',
-    enum: ['inet', 'inet6', 'inet46'],
-  })
-  ipprotocol: string;
 
   @ApiProperty({
     description: 'Interface name',
@@ -52,94 +37,11 @@ export class FirewallRuleDto {
   interface?: string;
 
   @ApiProperty({
-    description: 'Protocol type',
-    example: 'tcp',
-    required: false,
-  })
-  protocol?: string;
-
-  @ApiProperty({
-    description: 'Source network/address',
-    example: 'any',
-    required: false,
-  })
-  source_net?: string;
-
-  @ApiProperty({
-    description: 'Source port',
-    example: '22',
-    required: false,
-  })
-  source_port?: string;
-
-  @ApiProperty({
-    description: 'Destination network/address',
-    example: 'any',
-    required: false,
-  })
-  destination_net?: string;
-
-  @ApiProperty({
-    description: 'Destination port',
-    example: '443',
-    required: false,
-  })
-  destination_port?: string;
-
-  @ApiProperty({
     description: 'Rule description',
     example: 'Allow HTTPS traffic',
     required: false,
   })
   description?: string;
-
-  @ApiProperty({
-    description: 'Whether logging is enabled',
-    example: '1',
-  })
-  log: string;
-
-  @ApiProperty({
-    description: 'State type (keep state, sloppy state, etc.)',
-    example: 'keep',
-    required: false,
-  })
-  statetype?: string;
-
-  @ApiProperty({
-    description: 'State policy (default, if-bound, floating)',
-    example: 'default',
-    required: false,
-  })
-  state_policy?: string;
-
-  @ApiProperty({
-    description: 'Quick rule (process immediately)',
-    example: true,
-    required: false,
-  })
-  quick?: boolean;
-
-  @ApiProperty({
-    description: 'Gateway for this rule',
-    example: 'None',
-    required: false,
-  })
-  gateway?: string;
-
-  @ApiProperty({
-    description: 'Sequence number',
-    example: '100',
-    required: false,
-  })
-  sequence?: string;
-
-  @ApiProperty({
-    description: 'Categories assigned to this rule',
-    example: [],
-    required: false,
-  })
-  categories?: string[];
 
   @ApiProperty({
     description: 'Active schedule for this rule',

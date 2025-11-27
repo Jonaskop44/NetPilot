@@ -52,10 +52,8 @@ const FirewallRulesPage = () => {
   const {
     filterValue,
     actionFilter,
-    directionFilter,
     filteredRules,
     setActionFilter,
-    setDirectionFilter,
     onClear,
     onSearchChange,
   } = useFirewallFilters(data?.rules);
@@ -99,11 +97,9 @@ const FirewallRulesPage = () => {
               <FirewallTableTopContent
                 filterValue={filterValue}
                 actionFilter={actionFilter}
-                directionFilter={directionFilter}
                 onClear={onClear}
                 onSearchChange={onSearchChange}
                 onActionFilterChange={setActionFilter}
-                onDirectionFilterChange={setDirectionFilter}
               />
             }
             topContentPlacement="outside"

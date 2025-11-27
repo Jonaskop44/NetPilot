@@ -13,21 +13,17 @@ import { Icon } from "@iconify/react";
 interface FirewallTableTopContentProps {
   filterValue: string;
   actionFilter: Selection;
-  directionFilter: Selection;
   onClear: () => void;
   onSearchChange: (value?: string) => void;
   onActionFilterChange: (keys: Selection) => void;
-  onDirectionFilterChange: (keys: Selection) => void;
 }
 
 const FirewallTableTopContent: FC<FirewallTableTopContentProps> = ({
   filterValue,
   actionFilter,
-  directionFilter,
   onClear,
   onSearchChange,
   onActionFilterChange,
-  onDirectionFilterChange,
 }) => {
   return (
     <div className="flex flex-col gap-4">
@@ -59,31 +55,9 @@ const FirewallTableTopContent: FC<FirewallTableTopContentProps> = ({
               selectionMode="multiple"
               onSelectionChange={onActionFilterChange}
             >
-              <DropdownItem key="pass">Pass</DropdownItem>
-              <DropdownItem key="block">Block</DropdownItem>
-              <DropdownItem key="reject">Reject</DropdownItem>
-            </DropdownMenu>
-          </Dropdown>
-
-          <Dropdown>
-            <DropdownTrigger>
-              <Button
-                endContent={<Icon icon="solar:alt-arrow-down-linear" />}
-                variant="flat"
-              >
-                Richtung
-              </Button>
-            </DropdownTrigger>
-            <DropdownMenu
-              disallowEmptySelection
-              aria-label="Direction Filter"
-              closeOnSelect={false}
-              selectedKeys={directionFilter}
-              selectionMode="multiple"
-              onSelectionChange={onDirectionFilterChange}
-            >
-              <DropdownItem key="in">Eingehend</DropdownItem>
-              <DropdownItem key="out">Ausgehend</DropdownItem>
+              <DropdownItem key="Pass">Pass</DropdownItem>
+              <DropdownItem key="Block">Block</DropdownItem>
+              <DropdownItem key="Reject">Reject</DropdownItem>
             </DropdownMenu>
           </Dropdown>
         </div>

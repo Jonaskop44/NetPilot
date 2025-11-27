@@ -63,16 +63,8 @@ export class FirewallService {
           uuid,
           enabled: ruleData.enabled === '1',
           action: extractSelectedOption(ruleData.action),
-          direction: extractSelectedOption(ruleData.direction),
-          ipprotocol: extractSelectedOption(ruleData.ipprotocol),
           interface: extractSelectedOption(ruleData.interface),
-          protocol: extractSelectedOption(ruleData.protocol),
-          source_net: ruleData.source_net || undefined,
-          source_port: ruleData.source_port || undefined,
-          destination_net: ruleData.destination_net || undefined,
-          destination_port: ruleData.destination_port || undefined,
           description: ruleData.description || undefined,
-          log: ruleData.log === '1',
           schedule: schedule
             ? {
                 scheduledFor: schedule.scheduledFor,

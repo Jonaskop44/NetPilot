@@ -5,7 +5,6 @@ import type { FirewallRuleDto } from "@/api/openapi.schemas";
 const useFirewallFilters = (rules: FirewallRuleDto[] | undefined) => {
   const [filterValue, setFilterValue] = useState("");
   const [actionFilter, setActionFilter] = useState<Selection>("all");
-  const [directionFilter, setDirectionFilter] = useState<Selection>("all");
 
   const hasSearchFilter = Boolean(filterValue);
 
@@ -13,13 +12,8 @@ const useFirewallFilters = (rules: FirewallRuleDto[] | undefined) => {
     let filteredItems = [...(rules || [])];
 
     if (hasSearchFilter) {
-      filteredItems = filteredItems.filter(
-        (rule) =>
-          rule.description?.toLowerCase().includes(filterValue.toLowerCase()) ||
-          rule.source_net?.toLowerCase().includes(filterValue.toLowerCase()) ||
-          rule.destination_net
-            ?.toLowerCase()
-            .includes(filterValue.toLowerCase())
+      filteredItems = filteredItems.filter((rule) =>
+        rule.description?.toLowerCase().includes(filterValue.toLowerCase())
       );
     }
 
@@ -29,14 +23,8 @@ const useFirewallFilters = (rules: FirewallRuleDto[] | undefined) => {
       );
     }
 
-    if (directionFilter !== "all" && directionFilter.size > 0) {
-      filteredItems = filteredItems.filter((rule) =>
-        Array.from(directionFilter).includes(rule.direction)
-      );
-    }
-
     return filteredItems;
-  }, [rules, filterValue, actionFilter, directionFilter, hasSearchFilter]);
+  }, [rules, filterValue, actionFilter, hasSearchFilter]);
 
   const onClear = useCallback(() => {
     setFilterValue("");
@@ -53,10 +41,8 @@ const useFirewallFilters = (rules: FirewallRuleDto[] | undefined) => {
   return {
     filterValue,
     actionFilter,
-    directionFilter,
     filteredRules,
     setActionFilter,
-    setDirectionFilter,
     onClear,
     onSearchChange,
   };
