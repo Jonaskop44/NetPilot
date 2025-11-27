@@ -22,6 +22,8 @@ import type {
 } from "@tanstack/react-query";
 
 import type {
+  BulkScheduleRulesDto,
+  BulkToggleRulesDto,
   FirewallControllerToggleFirewallRuleParams,
   FirewallRulesResponseDto,
   ScheduleRuleChangeDto,
@@ -369,6 +371,194 @@ export const useFirewallControllerScheduleRuleChange = <
 > => {
   const mutationOptions =
     getFirewallControllerScheduleRuleChangeMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};
+/**
+ * Enables or disables multiple firewall rules by their UUIDs
+ * @summary Toggle multiple firewall rules
+ */
+export const firewallControllerBulkToggleRules = (
+  bulkToggleRulesDto: BulkToggleRulesDto,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal,
+) => {
+  return customInstance<void>(
+    {
+      url: `/api/v1/firewall/bulk-toggle`,
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      data: bulkToggleRulesDto,
+      signal,
+    },
+    options,
+  );
+};
+
+export const getFirewallControllerBulkToggleRulesMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof firewallControllerBulkToggleRules>>,
+    TError,
+    { data: BulkToggleRulesDto },
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof firewallControllerBulkToggleRules>>,
+  TError,
+  { data: BulkToggleRulesDto },
+  TContext
+> => {
+  const mutationKey = ["firewallControllerBulkToggleRules"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof firewallControllerBulkToggleRules>>,
+    { data: BulkToggleRulesDto }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return firewallControllerBulkToggleRules(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type FirewallControllerBulkToggleRulesMutationResult = NonNullable<
+  Awaited<ReturnType<typeof firewallControllerBulkToggleRules>>
+>;
+export type FirewallControllerBulkToggleRulesMutationBody = BulkToggleRulesDto;
+export type FirewallControllerBulkToggleRulesMutationError = unknown;
+
+/**
+ * @summary Toggle multiple firewall rules
+ */
+export const useFirewallControllerBulkToggleRules = <
+  TError = unknown,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof firewallControllerBulkToggleRules>>,
+      TError,
+      { data: BulkToggleRulesDto },
+      TContext
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof firewallControllerBulkToggleRules>>,
+  TError,
+  { data: BulkToggleRulesDto },
+  TContext
+> => {
+  const mutationOptions =
+    getFirewallControllerBulkToggleRulesMutationOptions(options);
+
+  return useMutation(mutationOptions, queryClient);
+};
+/**
+ * Immediately toggles multiple firewall rules and schedules them to revert at a specific time
+ * @summary Schedule multiple firewall rules to change
+ */
+export const firewallControllerBulkScheduleRuleChanges = (
+  bulkScheduleRulesDto: BulkScheduleRulesDto,
+  options?: SecondParameter<typeof customInstance>,
+  signal?: AbortSignal,
+) => {
+  return customInstance<void>(
+    {
+      url: `/api/v1/firewall/bulk-schedule`,
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      data: bulkScheduleRulesDto,
+      signal,
+    },
+    options,
+  );
+};
+
+export const getFirewallControllerBulkScheduleRuleChangesMutationOptions = <
+  TError = unknown,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof firewallControllerBulkScheduleRuleChanges>>,
+    TError,
+    { data: BulkScheduleRulesDto },
+    TContext
+  >;
+  request?: SecondParameter<typeof customInstance>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof firewallControllerBulkScheduleRuleChanges>>,
+  TError,
+  { data: BulkScheduleRulesDto },
+  TContext
+> => {
+  const mutationKey = ["firewallControllerBulkScheduleRuleChanges"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof firewallControllerBulkScheduleRuleChanges>>,
+    { data: BulkScheduleRulesDto }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return firewallControllerBulkScheduleRuleChanges(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type FirewallControllerBulkScheduleRuleChangesMutationResult =
+  NonNullable<
+    Awaited<ReturnType<typeof firewallControllerBulkScheduleRuleChanges>>
+  >;
+export type FirewallControllerBulkScheduleRuleChangesMutationBody =
+  BulkScheduleRulesDto;
+export type FirewallControllerBulkScheduleRuleChangesMutationError = unknown;
+
+/**
+ * @summary Schedule multiple firewall rules to change
+ */
+export const useFirewallControllerBulkScheduleRuleChanges = <
+  TError = unknown,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof firewallControllerBulkScheduleRuleChanges>>,
+      TError,
+      { data: BulkScheduleRulesDto },
+      TContext
+    >;
+    request?: SecondParameter<typeof customInstance>;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof firewallControllerBulkScheduleRuleChanges>>,
+  TError,
+  { data: BulkScheduleRulesDto },
+  TContext
+> => {
+  const mutationOptions =
+    getFirewallControllerBulkScheduleRuleChangesMutationOptions(options);
 
   return useMutation(mutationOptions, queryClient);
 };

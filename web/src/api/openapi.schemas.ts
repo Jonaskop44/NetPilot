@@ -124,6 +124,18 @@ export interface ScheduledRuleChangeResponseDto {
   executedAt?: string;
 }
 
+export interface BulkToggleRulesDto {
+  /** Array of firewall rule UUIDs to toggle */
+  ruleUuids: string[];
+}
+
+export interface BulkScheduleRulesDto {
+  /** Array of firewall rule UUIDs to schedule */
+  ruleUuids: string[];
+  /** Time when the rule should be reverted back (HH:mm format) */
+  revertAt: string;
+}
+
 export interface PaginatedUsersResponseDto {
   users: UserDto[];
   /** Total number of users */

@@ -89,6 +89,8 @@ const useFirewallFilters = (rules: FirewallRuleDto[] | undefined) => {
   return {
     filterValue,
     actionFilter,
+    interfaceFilter,
+    categoryFilter,
     availableInterfaces,
     availableCategories,
     filteredRules,

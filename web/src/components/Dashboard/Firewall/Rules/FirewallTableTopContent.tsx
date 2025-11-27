@@ -41,7 +41,7 @@ const FirewallTableTopContent: FC<FirewallTableTopContentProps> = ({
         <Input
           isClearable
           className="w-full sm:max-w-[44%]"
-          placeholder="Suche nach Beschreibung, Quelle oder Ziel"
+          placeholder="Suche nach Beschreibung"
           startContent={<Icon icon="solar:magnifer-linear" />}
           value={filterValue}
           onClear={onClear}
